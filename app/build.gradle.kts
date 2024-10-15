@@ -35,6 +35,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String","BASE_URL", getProperty("BASE_URL"))
+        buildConfigField("String","KAKAO_NATIVE_APP_KEY", getProperty("KAKAO_NATIVE_APP_KEY"))
     }
 
     buildTypes {
@@ -73,4 +74,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.hilt.navigation)
     ksp(libs.hilt.android.compiler)
+
+    // 기타
+    implementation(libs.kakao.maps)
 }

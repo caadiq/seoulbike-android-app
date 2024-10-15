@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">따릉이 현황</string>
+
+    <!--activity_main.xml-->
+    <string name="str_main_tab_map">지도</string>
+    <string name="str_main_tab_station">대여소</string>
 </resources>

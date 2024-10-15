@@ -16,4 +16,10 @@
     </style>
 
     <style name="Theme.SeoulBike" parent="Base.Theme.SeoulBike" />
+
+    <style name="Style.TabLayout" parent="TextAppearance.MaterialComponents.Button">
+        <item name="fontFamily">@font/nanum_square_round_bold</item>
+        <item name="android:fontFamily">@font/nanum_square_round_bold</item>
+        <item name="android:textSize">16dp</item>
+    </style>
 </resources>

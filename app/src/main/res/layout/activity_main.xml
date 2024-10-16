@@ -7,7 +7,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutHeader"
         android:layout_width="0dp"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="120dp"
+        android:background="@color/white"
+        android:elevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -16,7 +18,7 @@
             android:id="@+id/imgLogo"
             android:layout_width="40dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/tabLayout"
             app:layout_constraintDimensionRatio="H, 1:1"
             app:layout_constraintEnd_toStartOf="@+id/imgLogoTitle"
             app:layout_constraintHorizontal_chainStyle="packed"
@@ -50,38 +52,38 @@
             app:layout_constraintTop_toTopOf="@+id/imgLogo"
             app:srcCompat="@drawable/icon_search" />
 
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabLayout"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:tabGravity="fill"
+            app:tabIconTint="@color/color_tab_selector"
+            app:tabIndicatorFullWidth="true"
+            app:tabInlineLabel="true"
+            app:tabMode="fixed"
+            app:tabRippleColor="@android:color/transparent"
+            app:tabTextAppearance="@style/Style.TabLayout"
+            app:tabTextColor="@color/color_tab_selector">
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/icon_map_20dp"
+                android:text="@string/str_main_tab_map" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:icon="@drawable/icon_bike_20dp"
+                android:text="@string/str_main_tab_station" />
+
+        </com.google.android.material.tabs.TabLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/layoutHeader"
-        app:tabGravity="fill"
-        app:tabIconTint="@color/color_tab_selector"
-        app:tabIndicatorFullWidth="true"
-        app:tabInlineLabel="true"
-        app:tabMode="fixed"
-        app:tabRippleColor="@android:color/transparent"
-        app:tabTextAppearance="@style/Style.TabLayout"
-        app:tabTextColor="@color/color_tab_selector">
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:icon="@drawable/icon_map_20dp"
-            android:text="@string/str_main_tab_map" />
-
-        <com.google.android.material.tabs.TabItem
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:icon="@drawable/icon_bike_20dp"
-            android:text="@string/str_main_tab_station" />
-
-    </com.google.android.material.tabs.TabLayout>
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/containerView"
@@ -90,6 +92,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/layoutHeader" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

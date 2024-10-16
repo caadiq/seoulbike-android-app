@@ -5,6 +5,10 @@
     <string name="str_main_tab_map">지도</string>
     <string name="str_main_tab_station">대여소</string>
 
+    <!--dialog_default.xml-->
+    <string name="str_dialog_default_cancel">취소</string>
+    <string name="str_dialog_default_confirm">확인</string>
+
     <!--MainActivity.kt-->
     <string name="str_main_press_back">뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.</string>
 </resources>

@@ -69,6 +69,7 @@ dependencies {
 
     // google
     implementation(libs.material)
+    implementation(libs.location)
 
     // hilt
     implementation(libs.hilt.android)
@@ -77,4 +78,5 @@ dependencies {
 
     // 기타
     implementation(libs.kakao.maps)
+    implementation(libs.lottie)
 }

@@ -22,6 +22,7 @@ class MapFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        setupView()
         setupMapView()
     }
 
@@ -38,6 +39,14 @@ class MapFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         binding.mapView.pause()
+    }
+
+    private fun setupView() {
+        binding.lottieRelolad.setOnClickListener {
+            binding.lottieRelolad.playAnimation()
+
+            // TODO:
+        }
     }
 
     private fun setupMapView() {

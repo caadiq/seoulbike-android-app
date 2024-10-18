@@ -8,7 +8,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import com.beemer.seoulbike.databinding.FragmentMapBinding
+import com.beemer.seoulbike.viewmodel.BikeViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -18,11 +20,14 @@ import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class MapFragment : Fragment(), OnMapReadyCallback {
     private var _binding : FragmentMapBinding? = null
     private val binding get() = _binding!!
+
+    private val bikeViewModel by viewModels<BikeViewModel>()
 
     private val PERMISSION_REQUEST_CODE = 1001
 
@@ -43,6 +48,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         setupMap()
         setupView()
+        setupViewModel()
     }
 
     override fun onDestroyView() {
@@ -89,6 +95,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun setupView() {
         binding.lottieRelolad.setOnClickListener {
             binding.lottieRelolad.playAnimation()
+
+            getLocation(naverMap)
+        }
+    }
+
+    private fun setupViewModel() {
+        bikeViewModel.apply {
+            nearbyStations.observe(viewLifecycleOwner) {
+                Log.d("테스트", "nearbyStations: $it")
+            }
         }
     }
 
@@ -98,8 +114,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val lat = it.latitude
             val lon = it.longitude
 
-            Log.d("테스트", "lat: $lat, lon: $lon")
-
             naverMap.locationOverlay.run {
                 isVisible = true
                 position = LatLng(lat, lon)
@@ -107,6 +121,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             val cameraUpdate = CameraUpdate.scrollTo(LatLng(lat, lon))
             naverMap.moveCamera(cameraUpdate)
+
+            bikeViewModel.getNearbyStations(lat, lon, 500)
         }.addOnFailureListener { }
     }
 }

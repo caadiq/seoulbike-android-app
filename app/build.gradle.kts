@@ -35,7 +35,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String","BASE_URL", getProperty("BASE_URL"))
-        buildConfigField("String","KAKAO_NATIVE_APP_KEY", getProperty("KAKAO_NATIVE_APP_KEY"))
+        buildConfigField("String","NAVER_CLIENT_ID", getProperty("NAVER_CLIENT_ID"))
     }
 
     buildTypes {
@@ -77,6 +77,6 @@ dependencies {
     ksp(libs.hilt.android.compiler)
 
     // 기타
-    implementation(libs.kakao.maps)
+    implementation(libs.naver.maps)
     implementation(libs.lottie)
 }

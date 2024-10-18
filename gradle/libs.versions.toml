@@ -19,7 +19,7 @@ location = "21.3.0"
 hilt = "2.52"
 hiltX = "1.2.0"
 
-kakaoMaps = "2.11.9"
+naverMaps = "3.19.1"
 lottie = "6.5.2"
 
 
@@ -44,7 +44,7 @@ hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-comp
 hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation-fragment", version.ref = "hiltX" }
 
 # 기타
-kakao-maps = { group = "com.kakao.maps.open", name = "android", version.ref = "kakaoMaps" }
+naver-maps = { group = "com.naver.maps", name = "map-sdk", version.ref = "naverMaps" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
 
 

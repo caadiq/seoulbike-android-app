@@ -62,7 +62,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:tabGravity="fill"
             app:tabIconTint="@color/color_tab_selector"
-            app:tabIndicatorFullWidth="true"
+            app:tabIndicatorFullWidth="false"
             app:tabInlineLabel="true"
             app:tabMode="fixed"
             app:tabRippleColor="@android:color/transparent"

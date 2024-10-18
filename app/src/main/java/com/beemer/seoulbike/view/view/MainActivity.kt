@@ -122,7 +122,6 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.currentFragmentType.observe(this) { fragmentType ->
             val currentFragment = supportFragmentManager.findFragmentByTag(fragmentType.tag)
             supportFragmentManager.beginTransaction().apply {
-                setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                 supportFragmentManager.fragments.forEach { fragment ->
                     if (fragment == currentFragment)
                         show(fragment)

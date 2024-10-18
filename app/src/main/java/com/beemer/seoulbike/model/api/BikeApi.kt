@@ -11,6 +11,6 @@ interface BikeApi {
     fun getNearByStations(
         @Query("lat") lat: Double,
         @Query("lon") lon: Double,
-        @Query("distance") radius: Int
+        @Query("distance") distance: Double
     ): Call<List<NearbyStationListDto>>
 }

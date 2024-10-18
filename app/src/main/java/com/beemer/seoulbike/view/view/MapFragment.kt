@@ -2,7 +2,6 @@ package com.beemer.seoulbike.view.view
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -19,6 +18,7 @@ import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.util.FusedLocationSource
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -34,6 +34,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
+
+    private var isInitialLocationSet = false
+    private val markers = mutableListOf<Marker>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
@@ -79,6 +82,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         naverMap.locationSource = locationSource
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
         getLocation(naverMap)
+
+        setupCamera()
     }
 
     private fun setupMap() {
@@ -95,15 +100,38 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun setupView() {
         binding.lottieRelolad.setOnClickListener {
             binding.lottieRelolad.playAnimation()
-
-            getLocation(naverMap)
         }
     }
 
     private fun setupViewModel() {
         bikeViewModel.apply {
-            nearbyStations.observe(viewLifecycleOwner) {
-                Log.d("테스트", "nearbyStations: $it")
+            nearbyStations.observe(viewLifecycleOwner) { stations ->
+                markers.forEach { it.map = null }
+                markers.clear()
+
+                stations.forEach { station ->
+                    val marker = Marker()
+                    val lat = station.stationDetails.lat
+                    val lon = station.stationDetails.lon
+
+                    if (lat != null && lon != null) {
+                        marker.position = LatLng(lat, lon)
+                        marker.map = naverMap
+                        markers.add(marker)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setupCamera() {
+        naverMap.addOnCameraIdleListener {
+            if (isInitialLocationSet) {
+                val cameraPosition = naverMap.cameraPosition
+                val lat = cameraPosition.target.latitude
+                val lon = cameraPosition.target.longitude
+
+                getNearbyStations(lat, lon, cameraPosition.zoom)
             }
         }
     }
@@ -119,10 +147,38 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 position = LatLng(lat, lon)
             }
 
-            val cameraUpdate = CameraUpdate.scrollTo(LatLng(lat, lon))
+            val zoomLevel = 17.0
+
+            val cameraUpdate = CameraUpdate.scrollAndZoomTo(LatLng(lat, lon), zoomLevel)
             naverMap.moveCamera(cameraUpdate)
 
-            bikeViewModel.getNearbyStations(lat, lon, 500)
+            isInitialLocationSet = true
+
+            getNearbyStations(lat, lon, zoomLevel)
         }.addOnFailureListener { }
+    }
+
+    private fun getNearbyStations(lat: Double, lon: Double, zoomLevel: Double) {
+        val distance = when (zoomLevel) {
+            in 0.0..13.5 -> null
+            in 13.5..14.0 -> 2000.0
+            in 14.0..14.5 -> 1500.0
+            in 14.5..15.0 -> 1000.0
+            in 15.0..15.5 -> 700.0
+            in 15.5..16.0 -> 500.0
+            in 16.0..16.5 -> 300.0
+            in 16.5..17.0 -> 200.0
+            in 17.0..17.5 -> 150.0
+            in 17.5..18.0 -> 100.0
+            in 18.0..21.0 -> 50.0
+            else -> null
+        }
+
+        if (distance == null) {
+            markers.forEach { it.map = null }
+            markers.clear()
+        } else {
+            bikeViewModel.getNearbyStations(lat, lon, distance)
+        }
     }
 }

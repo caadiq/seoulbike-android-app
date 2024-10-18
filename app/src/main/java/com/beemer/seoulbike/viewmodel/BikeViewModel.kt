@@ -15,9 +15,9 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
     private val _nearbyStations = MutableLiveData<List<NearbyStationListDto>>()
     val nearbyStations: LiveData<List<NearbyStationListDto>> = _nearbyStations
 
-    fun getNearbyStations(lat: Double, lon: Double, radius: Int) {
+    fun getNearbyStations(lat: Double, lon: Double, distance: Double) {
         viewModelScope.launch {
-            _nearbyStations.postValue(repository.getNearByStations(lat, lon, radius))
+            _nearbyStations.postValue(repository.getNearByStations(lat, lon, distance))
         }
     }
 }

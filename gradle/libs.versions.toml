@@ -21,6 +21,7 @@ hiltX = "1.2.0"
 
 naverMaps = "3.19.1"
 lottie = "6.5.2"
+retrofit = "2.11.0"
 
 
 [libraries]
@@ -46,6 +47,8 @@ hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation-fragment", 
 # 기타
 naver-maps = { group = "com.naver.maps", name = "map-sdk", version.ref = "naverMaps" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 
 
 [plugins]

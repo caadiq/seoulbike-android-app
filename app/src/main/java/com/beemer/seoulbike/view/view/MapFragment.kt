@@ -6,6 +6,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.beemer.seoulbike.databinding.FragmentMapBinding
@@ -21,6 +22,7 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import dagger.hilt.android.AndroidEntryPoint
@@ -118,12 +120,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 markerList.forEach { it.map = null }
                 markerList.clear()
 
-                stations.forEach {
-                    val lat = it.stationDetails.lat
-                    val lon = it.stationDetails.lon
+                stations.forEach { station ->
+                    val lat = station.stationDetails.lat
+                    val lon = station.stationDetails.lon
 
                     if (lat != null && lon != null) {
-                        it.stationStatus.parkingCnt?.let { count ->
+                        station.stationStatus.parkingCnt?.let { count ->
                             val markerBinding = MarkerCustomBinding.inflate(LayoutInflater.from(context))
                             markerBinding.txtCount.text = "${count}대"
 
@@ -131,6 +133,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                 position = LatLng(lat, lon)
                                 icon = OverlayImage.fromView(markerBinding.root)
                                 setCaptionAligns(Align.TopRight)
+                                onClickListener = Overlay.OnClickListener {
+                                    Toast.makeText(context, station.stationNm, Toast.LENGTH_SHORT).show()
+
+                                    true
+                                }
                                 map = naverMap
                             }
                             markerList.add(marker)

@@ -34,9 +34,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
+    private val markerList = mutableListOf<Marker>()
 
     private var isInitialLocationSet = false
-    private val markers = mutableListOf<Marker>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
@@ -106,18 +106,19 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun setupViewModel() {
         bikeViewModel.apply {
             nearbyStations.observe(viewLifecycleOwner) { stations ->
-                markers.forEach { it.map = null }
-                markers.clear()
+                markerList.forEach { it.map = null }
+                markerList.clear()
 
-                stations.forEach { station ->
-                    val marker = Marker()
-                    val lat = station.stationDetails.lat
-                    val lon = station.stationDetails.lon
+                stations.forEach {
+                    val lat = it.stationDetails.lat
+                    val lon = it.stationDetails.lon
 
                     if (lat != null && lon != null) {
-                        marker.position = LatLng(lat, lon)
-                        marker.map = naverMap
-                        markers.add(marker)
+                        val marker = Marker().apply {
+                            position = LatLng(lat, lon)
+                            map = naverMap
+                        }
+                        markerList.add(marker)
                     }
                 }
             }
@@ -160,7 +161,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun getNearbyStations(lat: Double, lon: Double, zoomLevel: Double) {
         val distance = when (zoomLevel) {
-            in 0.0..13.5 -> null
+            in 0.0..13.0 -> null
+            in 13.0..13.5 -> 5000.0
             in 13.5..14.0 -> 2000.0
             in 14.0..14.5 -> 1500.0
             in 14.5..15.0 -> 1000.0
@@ -175,8 +177,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }
 
         if (distance == null) {
-            markers.forEach { it.map = null }
-            markers.clear()
+            markerList.forEach { it.map = null }
+            markerList.clear()
         } else {
             bikeViewModel.getNearbyStations(lat, lon, distance)
         }

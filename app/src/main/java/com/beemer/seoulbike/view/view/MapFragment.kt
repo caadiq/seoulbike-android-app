@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.beemer.seoulbike.databinding.FragmentMapBinding
+import com.beemer.seoulbike.databinding.MarkerCustomBinding
 import com.beemer.seoulbike.viewmodel.BikeViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -18,7 +19,9 @@ import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -76,7 +79,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         binding.locationButton.map = naverMap // 현위치 버튼 설정
 
         // 레이어 설정
-        naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_BICYCLE, true) // 자전거 도로, 자전거 주차대 등 자전거와 관련된 요소 표시
+//        naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_BICYCLE, true) // 자전거 도로, 자전거 주차대 등 자전거와 관련된 요소 표시
 
         // 현위치 설정
         naverMap.locationSource = locationSource
@@ -114,11 +117,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     val lon = it.stationDetails.lon
 
                     if (lat != null && lon != null) {
-                        val marker = Marker().apply {
-                            position = LatLng(lat, lon)
-                            map = naverMap
+
+
+                        it.stationStatus.parkingCnt?.let { count ->
+                            val markerBinding = MarkerCustomBinding.inflate(LayoutInflater.from(context))
+                            markerBinding.txtCount.text = "${count}대"
+
+                            val marker = Marker().apply {
+                                position = LatLng(lat, lon)
+                                icon = OverlayImage.fromView(markerBinding.root)
+                                setCaptionAligns(Align.TopRight)
+                                map = naverMap
+                            }
+                            markerList.add(marker)
                         }
-                        markerList.add(marker)
                     }
                 }
             }
@@ -162,7 +174,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun getNearbyStations(lat: Double, lon: Double, zoomLevel: Double) {
         val distance = when (zoomLevel) {
             in 0.0..13.0 -> null
-            in 13.0..13.5 -> 5000.0
             in 13.5..14.0 -> 2000.0
             in 14.0..14.5 -> 1500.0
             in 14.5..15.0 -> 1000.0

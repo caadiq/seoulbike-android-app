@@ -103,6 +103,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun setupView() {
         binding.lottieRelolad.setOnClickListener {
             binding.lottieRelolad.playAnimation()
+
+            val cameraPosition = naverMap.cameraPosition
+            val lat = cameraPosition.target.latitude
+            val lon = cameraPosition.target.longitude
+
+            getNearbyStations(lat, lon, cameraPosition.zoom)
         }
     }
 
@@ -117,8 +123,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     val lon = it.stationDetails.lon
 
                     if (lat != null && lon != null) {
-
-
                         it.stationStatus.parkingCnt?.let { count ->
                             val markerBinding = MarkerCustomBinding.inflate(LayoutInflater.from(context))
                             markerBinding.txtCount.text = "${count}대"

@@ -1,6 +1,7 @@
 package com.beemer.seoulbike.view.view
 
 import android.annotation.SuppressLint
+import android.graphics.PointF
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -81,7 +82,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         binding.locationButton.map = naverMap // 현위치 버튼 설정
 
         // 레이어 설정
-//        naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_BICYCLE, true) // 자전거 도로, 자전거 주차대 등 자전거와 관련된 요소 표시
+        naverMap.setLayerGroupEnabled(NaverMap.LAYER_GROUP_BICYCLE, true) // 자전거 도로, 자전거 주차대 등 자전거와 관련된 요소 표시
 
         // 현위치 설정
         naverMap.locationSource = locationSource
@@ -132,7 +133,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                             val marker = Marker().apply {
                                 position = LatLng(lat, lon)
                                 icon = OverlayImage.fromView(markerBinding.root)
-                                setCaptionAligns(Align.TopRight)
+                                anchor = PointF(0.2f, 1.0f)
                                 onClickListener = Overlay.OnClickListener {
                                     Toast.makeText(context, station.stationNm, Toast.LENGTH_SHORT).show()
 

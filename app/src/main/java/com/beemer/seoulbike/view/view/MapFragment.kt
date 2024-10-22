@@ -21,7 +21,6 @@ import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
-import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
 import com.naver.maps.map.overlay.OverlayImage
@@ -172,7 +171,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 position = LatLng(lat, lon)
             }
 
-            val zoomLevel = 17.0
+            val zoomLevel = 14.5
 
             val cameraUpdate = CameraUpdate.scrollAndZoomTo(LatLng(lat, lon), zoomLevel)
             naverMap.moveCamera(cameraUpdate)

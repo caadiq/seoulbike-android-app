@@ -88,6 +88,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
         getLocation(naverMap)
 
+        naverMap.addOnLocationChangeListener { location ->
+            if (naverMap.locationTrackingMode == LocationTrackingMode.Follow || naverMap.locationTrackingMode == LocationTrackingMode.Face) {
+                val cameraPosition = naverMap.cameraPosition
+                val lat = location.latitude
+                val lon = location.longitude
+
+                getNearbyStations(lat, lon, cameraPosition.zoom)
+            }
+        }
+
         setupCamera()
     }
 

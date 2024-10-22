@@ -5,7 +5,7 @@
     <color name="colorOnPrimary">@color/white</color> <!-- 주요 색상 위에 오는 요소들의 색상 -->
     <color name="colorSecondary">@color/primary</color> <!-- 보조 색상 -->
     <color name="colorOnSecondary">@color/white</color> <!-- 보조 색상 위에 오는 요소들의 색상 -->
-    <color name="colorSurface">@color/primary</color> <!-- 카드, 시트 등 UI 표면에 사용되는 색상 -->
+    <color name="colorSurface">@color/white</color> <!-- 카드, 시트 등 UI 표면에 사용되는 색상 -->
     <color name="colorOutlineVariant">@color/light_gray</color> <!-- 테두리 색상 -->
     <color name="colorSurfaceContainer">@color/white</color> <!-- 메뉴 색상 -->
 

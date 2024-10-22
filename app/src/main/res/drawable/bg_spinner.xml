@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <layer-list>
+            <item>
+                <shape>
+                    <solid android:color="@color/white" />
+                    <stroke android:width="1dp" android:color="@color/colorPrimary" />
+                    <padding android:bottom="12dp" android:left="16dp" android:right="16dp" android:top="12dp" />
+                    <corners android:radius="12dp" />
+                </shape>
+            </item>
+
+            <item android:width="20dp" android:height="20dp" android:drawable="@drawable/icon_triangle_down_primary" android:gravity="end|center_vertical" />
+        </layer-list>
+    </item>
+</selector>

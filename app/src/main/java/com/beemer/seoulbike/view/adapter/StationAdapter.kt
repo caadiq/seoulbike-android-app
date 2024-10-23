@@ -38,7 +38,7 @@ class StationAdapter : RecyclerView.Adapter<StationAdapter.ViewHolder>() {
         }
 
         fun bind(item: NearbyStationListDto) {
-            binding.txtName.text = "${item.stationNo}. ${item.stationNm}"
+            binding.txtName.text = "${item.stationNo.replace("^0+".toRegex(), "")}. ${item.stationNm}"
             binding.txtAddress.text = item.stationDetails.addr1
             binding.txtDistance.text = String.format(Locale.getDefault(), "%.1fm", item.distance)
             binding.txtParking.text = item.stationStatus.parkingCnt.toString()

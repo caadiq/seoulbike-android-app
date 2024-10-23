@@ -13,9 +13,19 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="elevationOverlayEnabled">false</item>
         <item name="android:statusBarColor">@color/white</item>
+
+        <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialogTheme</item>
     </style>
 
     <style name="Theme.SeoulBike" parent="Base.Theme.SeoulBike" />
+
+    <style name="CustomBottomSheetDialogTheme" parent="Theme.MaterialComponents.Light.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/CustomRoundedBackgroundBottomSheet</item>
+    </style>
+
+    <style name="CustomRoundedBackgroundBottomSheet" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/bottomsheet_rounded_corner</item>
+    </style>
 
     <style name="Style.TabLayout" parent="TextAppearance.MaterialComponents.Button">
         <item name="fontFamily">@font/nanum_square_round_bold</item>

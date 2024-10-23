@@ -114,6 +114,10 @@ class StationFragment : Fragment() {
                 getLocation(distance)
                 binding.progressIndicator.show()
             }
+
+            emptyListText.observe(viewLifecycleOwner) { text ->
+                binding.txtEmptyList.text = text
+            }
         }
 
         bikeViewModel.apply {

@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.beemer.seoulbike.R
@@ -111,6 +112,13 @@ class StationFragment : Fragment() {
 
                 stations[0].stationStatus.updateTime?.let {
                     binding.txtUpdate.text = "${convertDateTime(it, "yyyy-MM-dd'T'HH:mm:ss", "HH:mm:ss", Locale.KOREA)} 기준"
+                }
+            }
+
+            errorMessage.observe(viewLifecycleOwner) { message ->
+                if (message != null) {
+                    stationAdapter.setItemList(emptyList())
+                    Toast.makeText(context, "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
                 }
             }
         }

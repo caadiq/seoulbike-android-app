@@ -155,6 +155,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     }
                 }
             }
+
+            errorMessage.observe(viewLifecycleOwner) { message ->
+                if (message != null) {
+                    Toast.makeText(context, "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 

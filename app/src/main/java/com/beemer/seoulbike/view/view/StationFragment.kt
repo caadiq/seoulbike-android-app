@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.beemer.seoulbike.R
@@ -64,6 +63,13 @@ class StationFragment : Fragment() {
             }
         }
 
+        binding.btnRetry.setOnClickListener {
+            mainViewModel.distance.value?.let { distance ->
+                getLocation(distance)
+                binding.progressIndicator.show()
+            }
+        }
+
         val items = listOf("500m 이내", "1km 이내", "2km 이내")
         val adapter = ArrayAdapter(requireContext(), R.layout.spinner_selected, R.id.txtTitle, items)
         adapter.setDropDownViewResource(R.layout.spinner_item)
@@ -73,9 +79,18 @@ class StationFragment : Fragment() {
             onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     when (position) {
-                        0 -> mainViewModel.setDistance(500.0)
-                        1 -> mainViewModel.setDistance(1000.0)
-                        2 -> mainViewModel.setDistance(2000.0)
+                        0 -> {
+                            mainViewModel.setDistance(500.0)
+                            mainViewModel.setEmptyListText("500m 이내에 대여소가 없습니다.")
+                        }
+                        1 -> {
+                            mainViewModel.setDistance(1000.0)
+                            mainViewModel.setEmptyListText("1km 이내에 대여소가 없습니다.")
+                        }
+                        2 -> {
+                            mainViewModel.setDistance(2000.0)
+                            mainViewModel.setEmptyListText("2km 이내에 대여소가 없습니다.")
+                        }
                     }
                 }
 
@@ -105,6 +120,7 @@ class StationFragment : Fragment() {
             nearbyStations.observe(viewLifecycleOwner) { stations ->
                 binding.progressIndicator.hide()
                 binding.swipeRefreshLayout.isRefreshing = false
+                binding.txtEmptyList.visibility = if (stations.isEmpty()) View.VISIBLE else View.GONE
 
                 stationAdapter.setItemList(
                     stations.filter { it.stationStatus.parkingCnt != null }.sortedBy { it.distance }
@@ -117,8 +133,12 @@ class StationFragment : Fragment() {
 
             errorMessage.observe(viewLifecycleOwner) { message ->
                 if (message != null) {
-                    stationAdapter.setItemList(emptyList())
-                    Toast.makeText(context, "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+                    binding.progressIndicator.hide()
+                    binding.swipeRefreshLayout.isRefreshing = false
+                    binding.txtEmptyList.visibility = View.GONE
+
+                    binding.txtError.visibility = View.VISIBLE
+                    binding.btnRetry.visibility = View.VISIBLE
                 }
             }
         }
@@ -130,6 +150,8 @@ class StationFragment : Fragment() {
             val lat = it.latitude
             val lon = it.longitude
 
+            binding.txtError.visibility = View.GONE
+            binding.btnRetry.visibility = View.GONE
             bikeViewModel.getNearbyStations(lat, lon, distance)
         }.addOnFailureListener { }
     }

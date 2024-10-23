@@ -5,6 +5,13 @@
     <string name="str_main_tab_map">지도</string>
     <string name="str_main_tab_station">대여소</string>
 
+    <!--fragment_map.xml-->
+    <string name="str_map_reload">새로고침</string>
+
+    <!--fragment_station.xml-->
+    <string name="str_station_retry">재시도</string>
+    <string name="str_station_error_network">네트워크 오류가 발생했습니다.</string>
+
     <!--dialog_bottomsheet_status.xml-->
     <string name="str_bottomsheet_status_parking">대여가능</string>
     <string name="str_bottomsheet_status_rack">거치대</string>
@@ -12,4 +19,7 @@
 
     <!--MainActivity.kt-->
     <string name="str_main_press_back">뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.</string>
+
+    <!--MapFragment.kt-->
+    <string name="str_map_reloading">새로고침 중…</string>
 </resources>

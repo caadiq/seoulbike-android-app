@@ -78,7 +78,7 @@ dependencies {
 
     // 기타
     implementation(libs.naver.maps)
-    implementation(libs.lottie)
     implementation(libs.retrofit)
     implementation(libs.retrofit.gson)
+    implementation(libs.progress.button)
 }

@@ -7,12 +7,16 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.FragmentMapBinding
 import com.beemer.seoulbike.databinding.MarkerCustomBinding
 import com.beemer.seoulbike.viewmodel.BikeViewModel
+import com.github.razir.progressbutton.bindProgressButton
+import com.github.razir.progressbutton.hideProgress
+import com.github.razir.progressbutton.showProgress
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -42,6 +46,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val markerList = mutableListOf<Marker>()
 
     private var isInitialLocationSet = false
+    private var isMoving = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
@@ -113,20 +118,30 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun setupView() {
-        binding.lottieRelolad.setOnClickListener {
-            binding.lottieRelolad.playAnimation()
+        bindProgressButton(binding.btnReload)
 
-            val cameraPosition = naverMap.cameraPosition
-            val lat = cameraPosition.target.latitude
-            val lon = cameraPosition.target.longitude
+        binding.btnReload.setOnClickListener {
+            if (bikeViewModel.isLoading.value == false) {
+                binding.btnReload.showProgress {
+                    buttonTextRes = R.string.str_map_reloading
+                    progressColor = ContextCompat.getColor(requireContext(), R.color.white)
+                }
 
-            getNearbyStations(lat, lon, cameraPosition.zoom)
+                val cameraPosition = naverMap.cameraPosition
+                val lat = cameraPosition.target.latitude
+                val lon = cameraPosition.target.longitude
+
+                getNearbyStations(lat, lon, cameraPosition.zoom)
+            }
         }
     }
 
     private fun setupViewModel() {
         bikeViewModel.apply {
             nearbyStations.observe(viewLifecycleOwner) { stations ->
+                bikeViewModel.setLoading(false)
+                binding.btnReload.hideProgress(R.string.str_map_reload)
+
                 markerList.forEach { it.map = null }
                 markerList.clear()
 
@@ -144,7 +159,29 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                 icon = OverlayImage.fromView(markerBinding.root)
                                 anchor = PointF(0.2f, 1.0f)
                                 onClickListener = Overlay.OnClickListener {
-                                    Toast.makeText(context, station.stationNm, Toast.LENGTH_SHORT).show()
+//                                    StatusBottomsheetDialog(
+//                                        item = NearbyStationListDto(
+//                                            stationNo = "02385",
+//                                            stationId = "ST-1365",
+//                                            stationNm = "학동역",
+//                                            distance = 206.0,
+//                                            stationDetails = StationDetailsDto(
+//                                                addr1 = "서울특별시 강남구 학동로 지하 180",
+//                                                addr2 = "학동역",
+//                                                holdNum = 10,
+//                                                lat = 37.51395035,
+//                                                lon = 127.03015137
+//                                            ),
+//                                            stationStatus = StationStatusDto(
+//                                                rackCnt = 10,
+//                                                parkingCnt = 1,
+//                                                updateTime = "2024-10-18T09:17:48"
+//                                            )
+//                                        ),
+//                                        findDirection = {
+//
+//                                        }
+//                                    ).show(childFragmentManager, "StatusBottomsheetDialog")
 
                                     true
                                 }
@@ -157,21 +194,46 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
 
             errorMessage.observe(viewLifecycleOwner) { message ->
-                if (message != null) {
-                    Toast.makeText(context, "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
-                }
+                bikeViewModel.setLoading(false)
+                binding.btnReload.hideProgress(R.string.str_map_reload)
             }
         }
     }
 
     private fun setupCamera() {
         naverMap.addOnCameraIdleListener {
+            isMoving = false
+            
+            binding.btnReload.apply {
+                visibility = View.VISIBLE
+                alpha = 0f
+                translationY = height.toFloat()
+                animate()
+                    .translationY(0f)
+                    .alpha(1f)
+                    .setDuration(200)
+                    .start()
+            }
+
             if (isInitialLocationSet) {
                 val cameraPosition = naverMap.cameraPosition
                 val lat = cameraPosition.target.latitude
                 val lon = cameraPosition.target.longitude
 
                 getNearbyStations(lat, lon, cameraPosition.zoom)
+            }
+        }
+
+        naverMap.addOnCameraChangeListener { _, _ ->
+            if (!isMoving && bikeViewModel.isLoading.value == false) {
+                isMoving = true
+                binding.btnReload.animate()
+                    .translationY(binding.btnReload.height.toFloat())
+                    .setDuration(200)
+                    .withEndAction {
+                        binding.btnReload.visibility = View.GONE
+                    }
+                    .start()
             }
         }
     }
@@ -219,6 +281,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             markerList.clear()
         } else {
             bikeViewModel.getNearbyStations(lat, lon, distance)
+            bikeViewModel.setLoading(true)
+
+            binding.btnReload.showProgress {
+                buttonTextRes = R.string.str_map_reloading
+                progressColor = ContextCompat.getColor(requireContext(), R.color.white)
+            }
         }
     }
 }

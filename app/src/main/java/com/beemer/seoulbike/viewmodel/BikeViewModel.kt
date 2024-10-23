@@ -19,6 +19,9 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
+    private val _isLoading = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> = _isLoading
+
     fun getNearbyStations(lat: Double, lon: Double, distance: Double) {
         viewModelScope.launch {
             handleApiResponse(repository.getNearByStations(lat, lon, distance))
@@ -35,5 +38,9 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
                 _errorMessage.postValue(result.message)
             }
         }
+    }
+
+    fun setLoading(isLoading: Boolean) {
+        _isLoading.postValue(isLoading)
     }
 }

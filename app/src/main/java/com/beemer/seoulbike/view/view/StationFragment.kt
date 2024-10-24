@@ -156,7 +156,7 @@ class StationFragment : Fragment() {
 
             binding.txtError.visibility = View.GONE
             binding.btnRetry.visibility = View.GONE
-            bikeViewModel.getNearbyStations(lat, lon, distance)
+            bikeViewModel.getNearbyStations(lat, lon, lat, lon, distance)
         }.addOnFailureListener { }
     }
 }

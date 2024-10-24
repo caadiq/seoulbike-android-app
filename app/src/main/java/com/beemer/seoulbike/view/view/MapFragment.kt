@@ -94,13 +94,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         getLocation(naverMap)
 
         naverMap.addOnLocationChangeListener { location ->
-            if (naverMap.locationTrackingMode == LocationTrackingMode.Follow || naverMap.locationTrackingMode == LocationTrackingMode.Face) {
-                val cameraPosition = naverMap.cameraPosition
-                val lat = location.latitude
-                val lon = location.longitude
+            val lat = location.latitude
+            val lon = location.longitude
 
-                getNearbyStations(lat, lon, cameraPosition.zoom)
-            }
+            bikeViewModel.setMyLocation(lat, lon)
         }
 
         setupCamera()
@@ -159,30 +156,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                 icon = OverlayImage.fromView(markerBinding.root)
                                 anchor = PointF(0.2f, 1.0f)
                                 onClickListener = Overlay.OnClickListener {
-//                                    StatusBottomsheetDialog(
-//                                        item = NearbyStationListDto(
-//                                            stationNo = "02385",
-//                                            stationId = "ST-1365",
-//                                            stationNm = "학동역",
-//                                            distance = 206.0,
-//                                            stationDetails = StationDetailsDto(
-//                                                addr1 = "서울특별시 강남구 학동로 지하 180",
-//                                                addr2 = "학동역",
-//                                                holdNum = 10,
-//                                                lat = 37.51395035,
-//                                                lon = 127.03015137
-//                                            ),
-//                                            stationStatus = StationStatusDto(
-//                                                rackCnt = 10,
-//                                                parkingCnt = 1,
-//                                                updateTime = "2024-10-18T09:17:48"
-//                                            )
-//                                        ),
-//                                        findDirection = {
-//
-//                                        }
-//                                    ).show(childFragmentManager, "StatusBottomsheetDialog")
-
+                                    StatusBottomsheetDialog(
+                                        item = station
+                                    ).show(childFragmentManager, "StatusBottomsheetDialog")
                                     true
                                 }
                                 map = naverMap
@@ -244,6 +220,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val lat = it.latitude
             val lon = it.longitude
 
+            bikeViewModel.setMyLocation(lat, lon)
+
             naverMap.locationOverlay.run {
                 isVisible = true
                 position = LatLng(lat, lon)
@@ -260,7 +238,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         }.addOnFailureListener { }
     }
 
-    private fun getNearbyStations(lat: Double, lon: Double, zoomLevel: Double) {
+    private fun getNearbyStations(mapLat: Double, mapLon: Double, zoomLevel: Double) {
         val distance = when (zoomLevel) {
             in 0.0..13.0 -> null
             in 13.5..14.0 -> 2000.0
@@ -280,7 +258,10 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             markerList.forEach { it.map = null }
             markerList.clear()
         } else {
-            bikeViewModel.getNearbyStations(lat, lon, distance)
+            val myLat = bikeViewModel.myLocation.value?.first
+            val myLon = bikeViewModel.myLocation.value?.second
+
+            bikeViewModel.getNearbyStations(myLat ?: mapLat, myLon ?: mapLon, mapLat, mapLon, distance)
             bikeViewModel.setLoading(true)
 
             binding.btnReload.showProgress {

@@ -13,9 +13,9 @@
     <string name="str_station_error_network">네트워크 오류가 발생했습니다.</string>
 
     <!--dialog_bottomsheet_status.xml-->
+    <string name="str_bottomsheet_status_update">업데이트</string>
     <string name="str_bottomsheet_status_parking">대여가능</string>
     <string name="str_bottomsheet_status_rack">거치대</string>
-    <string name="str_bottomsheet_status_direction">길찾기</string>
 
     <!--MainActivity.kt-->
     <string name="str_main_press_back">뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.</string>

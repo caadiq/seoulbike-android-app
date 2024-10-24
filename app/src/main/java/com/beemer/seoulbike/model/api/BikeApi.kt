@@ -9,8 +9,10 @@ interface BikeApi {
 
     @GET("/api/seoulbike/stations/nearby")
     fun getNearByStations(
-        @Query("lat") lat: Double,
-        @Query("lon") lon: Double,
+        @Query("my_lat") myLat: Double,
+        @Query("my_lon") myLon: Double,
+        @Query("map_lat") mapLat: Double,
+        @Query("map_lon") mapLon: Double,
         @Query("distance") distance: Double
     ): Call<List<NearbyStationListDto>>
 }

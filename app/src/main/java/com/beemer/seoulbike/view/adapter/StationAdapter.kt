@@ -9,7 +9,7 @@ import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.RowNearStationBinding
 import com.beemer.seoulbike.model.dto.NearbyStationListDto
 import com.beemer.seoulbike.view.diff.StationListDiffUtil
-import java.util.Locale
+import com.beemer.seoulbike.view.utils.UnitConversion.formatDistance
 
 class StationAdapter : RecyclerView.Adapter<StationAdapter.ViewHolder>() {
     private var itemList = mutableListOf<NearbyStationListDto>()
@@ -40,7 +40,7 @@ class StationAdapter : RecyclerView.Adapter<StationAdapter.ViewHolder>() {
         fun bind(item: NearbyStationListDto) {
             binding.txtName.text = "${item.stationNo.replace("^0+".toRegex(), "")}. ${item.stationNm}"
             binding.txtAddress.text = item.stationDetails.addr1
-            binding.txtDistance.text = String.format(Locale.getDefault(), "%.1fm", item.distance)
+            binding.txtDistance.text = item.distance?.let { formatDistance(it)}
             binding.txtParking.text = item.stationStatus.parkingCnt.toString()
             binding.txtRack.text = item.stationStatus.rackCnt.toString()
 

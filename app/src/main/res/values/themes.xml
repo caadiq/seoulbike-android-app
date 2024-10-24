@@ -24,7 +24,7 @@
     </style>
 
     <style name="CustomRoundedBackgroundBottomSheet" parent="Widget.Design.BottomSheet.Modal">
-        <item name="android:background">@drawable/bottomsheet_rounded_corner</item>
+        <item name="android:background">@drawable/rectangle_lightgray_top_rounded_16dp</item>
     </style>
 
     <style name="Style.TabLayout" parent="TextAppearance.MaterialComponents.Button">

@@ -9,7 +9,7 @@ import javax.inject.Inject
 class BikeRepository @Inject constructor(retrofit: Retrofit) {
     private val bikeApi: BikeApi = retrofit.create(BikeApi::class.java)
 
-    suspend fun getNearByStations(lat: Double, lon: Double, distance: Double): ApiUtils.Results<List<NearbyStationListDto>> {
-        return ApiUtils.safeApiCall(bikeApi.getNearByStations(lat, lon, distance))
+    suspend fun getNearByStations(myLat: Double, myLon: Double, maoLat: Double, mapLon: Double, distance: Double): ApiUtils.Results<List<NearbyStationListDto>> {
+        return ApiUtils.safeApiCall(bikeApi.getNearByStations(myLat, myLon, maoLat, mapLon, distance))
     }
 }

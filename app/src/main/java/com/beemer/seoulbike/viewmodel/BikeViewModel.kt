@@ -16,15 +16,18 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
     private val _nearbyStations = MutableLiveData<List<NearbyStationListDto>>()
     val nearbyStations: LiveData<List<NearbyStationListDto>> = _nearbyStations
 
+    private val _myLocation = MutableLiveData<Pair<Double, Double>>()
+    val myLocation: LiveData<Pair<Double, Double>> = _myLocation
+
     private val _errorMessage = MutableLiveData<String?>()
     val errorMessage: LiveData<String?> = _errorMessage
 
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
 
-    fun getNearbyStations(lat: Double, lon: Double, distance: Double) {
+    fun getNearbyStations(myLat: Double, myLon: Double, mapLat: Double, mapLon: Double, distance: Double) {
         viewModelScope.launch {
-            handleApiResponse(repository.getNearByStations(lat, lon, distance))
+            handleApiResponse(repository.getNearByStations(myLat, myLon, mapLat, mapLon, distance))
         }
     }
 
@@ -42,5 +45,9 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
 
     fun setLoading(isLoading: Boolean) {
         _isLoading.postValue(isLoading)
+    }
+
+    fun setMyLocation(lat: Double, lon: Double) {
+        _myLocation.postValue(Pair(lat, lon))
     }
 }

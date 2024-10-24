@@ -46,7 +46,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private val markerList = mutableListOf<Marker>()
 
     private var isInitialLocationSet = false
-    private var isMoving = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
@@ -100,7 +99,15 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             bikeViewModel.setMyLocation(lat, lon)
         }
 
-        setupCamera()
+        naverMap.addOnCameraIdleListener {
+            if (isInitialLocationSet) {
+                val cameraPosition = naverMap.cameraPosition
+                val lat = cameraPosition.target.latitude
+                val lon = cameraPosition.target.longitude
+
+                getNearbyStations(lat, lon, cameraPosition.zoom)
+            }
+        }
     }
 
     private fun setupMap() {
@@ -156,7 +163,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                                 icon = OverlayImage.fromView(markerBinding.root)
                                 anchor = PointF(0.2f, 1.0f)
                                 onClickListener = Overlay.OnClickListener {
-                                    StatusBottomsheetDialog(
+                                    StationStatusBottomsheetDialog(
                                         item = station
                                     ).show(childFragmentManager, "StatusBottomsheetDialog")
                                     true
@@ -172,44 +179,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             errorMessage.observe(viewLifecycleOwner) { message ->
                 bikeViewModel.setLoading(false)
                 binding.btnReload.hideProgress(R.string.str_map_reload)
-            }
-        }
-    }
-
-    private fun setupCamera() {
-        naverMap.addOnCameraIdleListener {
-            isMoving = false
-            
-            binding.btnReload.apply {
-                visibility = View.VISIBLE
-                alpha = 0f
-                translationY = height.toFloat()
-                animate()
-                    .translationY(0f)
-                    .alpha(1f)
-                    .setDuration(200)
-                    .start()
-            }
-
-            if (isInitialLocationSet) {
-                val cameraPosition = naverMap.cameraPosition
-                val lat = cameraPosition.target.latitude
-                val lon = cameraPosition.target.longitude
-
-                getNearbyStations(lat, lon, cameraPosition.zoom)
-            }
-        }
-
-        naverMap.addOnCameraChangeListener { _, _ ->
-            if (!isMoving && bikeViewModel.isLoading.value == false) {
-                isMoving = true
-                binding.btnReload.animate()
-                    .translationY(binding.btnReload.height.toFloat())
-                    .setDuration(200)
-                    .withEndAction {
-                        binding.btnReload.visibility = View.GONE
-                    }
-                    .start()
             }
         }
     }
@@ -263,11 +232,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             bikeViewModel.getNearbyStations(myLat ?: mapLat, myLon ?: mapLon, mapLat, mapLon, distance)
             bikeViewModel.setLoading(true)
-
-            binding.btnReload.showProgress {
-                buttonTextRes = R.string.str_map_reloading
-                progressColor = ContextCompat.getColor(requireContext(), R.color.white)
-            }
         }
     }
 }

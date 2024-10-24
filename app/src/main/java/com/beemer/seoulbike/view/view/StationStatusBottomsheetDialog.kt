@@ -6,19 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.beemer.seoulbike.R
-import com.beemer.seoulbike.databinding.DialogBottomsheetStatusBinding
+import com.beemer.seoulbike.databinding.BottomsheetdialogStationStatusBinding
 import com.beemer.seoulbike.model.dto.NearbyStationListDto
 import com.beemer.seoulbike.view.utils.DateTimeConverter.convertDateTime
 import com.beemer.seoulbike.view.utils.UnitConversion.formatDistance
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.util.Locale
 
-class StatusBottomsheetDialog(private val item: NearbyStationListDto) : BottomSheetDialogFragment() {
-    private var _binding: DialogBottomsheetStatusBinding? = null
+class StationStatusBottomsheetDialog(private val item: NearbyStationListDto) : BottomSheetDialogFragment() {
+    private var _binding: BottomsheetdialogStationStatusBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        _binding = DialogBottomsheetStatusBinding.inflate(inflater, container, false)
+        _binding = BottomsheetdialogStationStatusBinding.inflate(inflater, container, false)
         return binding.root
     }
 

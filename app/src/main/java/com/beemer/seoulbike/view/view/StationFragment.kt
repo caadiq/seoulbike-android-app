@@ -105,6 +105,12 @@ class StationFragment : Fragment() {
             setHasFixedSize(true)
             itemAnimator = null
         }
+
+        stationAdapter.setOnItemClickListener { item, _ ->
+            StationDetailsDialog(
+                item = item
+            ).show(childFragmentManager, "DetailsDialog")
+        }
     }
 
     private fun setupViewModel() {

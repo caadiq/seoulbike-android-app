@@ -41,10 +41,10 @@ class StatusBottomsheetDialog(private val item: NearbyStationListDto) : BottomSh
         binding.txtDistance.text = item.distance?.let { formatDistance(it) }
 
         binding.txtParking.setTextColor(
-            if (item.stationStatus.parkingCnt == 0) {
-                ContextCompat.getColor(binding.root.context, R.color.red)
-            } else {
-                ContextCompat.getColor(binding.root.context, R.color.colorPrimary)
+            when (item.stationStatus.parkingCnt) {
+                0 -> ContextCompat.getColor(binding.root.context, R.color.red)
+                in 1..3 -> ContextCompat.getColor(binding.root.context, R.color.yellow)
+                else -> ContextCompat.getColor(binding.root.context, R.color.colorPrimary)
             }
         )
     }

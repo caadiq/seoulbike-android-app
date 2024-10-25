@@ -6,7 +6,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.beemer.seoulbike.R
-import com.beemer.seoulbike.databinding.RowNearStationBinding
+import com.beemer.seoulbike.databinding.RowStationsBinding
 import com.beemer.seoulbike.model.dto.StationListDto
 import com.beemer.seoulbike.view.diff.StationListDiffUtil
 import com.beemer.seoulbike.view.utils.UnitConversion.formatDistance
@@ -19,7 +19,7 @@ class StationAdapter : RecyclerView.Adapter<StationAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = RowNearStationBinding.inflate(inflater, parent, false)
+        val binding = RowStationsBinding.inflate(inflater, parent, false)
         return ViewHolder(binding)
     }
 
@@ -27,7 +27,7 @@ class StationAdapter : RecyclerView.Adapter<StationAdapter.ViewHolder>() {
         holder.bind(itemList[position])
     }
 
-    inner class ViewHolder(private val binding: RowNearStationBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: RowStationsBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
             itemView.setOnClickListener {
                 val position = bindingAdapterPosition
@@ -39,7 +39,6 @@ class StationAdapter : RecyclerView.Adapter<StationAdapter.ViewHolder>() {
 
         fun bind(item: StationListDto) {
             binding.txtName.text = "${item.stationNo.replace("^0+".toRegex(), "")}. ${item.stationNm}"
-            binding.txtAddress.text = item.stationDetails.addr1
             binding.txtDistance.text = item.distance?.let { formatDistance(it)}
             binding.txtParking.text = item.stationStatus.parkingCnt.toString()
             binding.txtRack.text = item.stationStatus.rackCnt.toString()

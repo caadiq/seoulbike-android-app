@@ -45,7 +45,7 @@
             android:clipToPadding="false"
             android:paddingBottom="8dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            tools:listitem="@layout/row_near_station" />
+            tools:listitem="@layout/row_stations" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 

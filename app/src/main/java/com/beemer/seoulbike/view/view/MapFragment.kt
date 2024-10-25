@@ -51,6 +51,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
 
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
+        locationSource = FusedLocationSource(this, PERMISSION_REQUEST_CODE)
 
         return binding.root
     }
@@ -118,7 +119,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             }
 
         mapFragment.getMapAsync(this)
-        locationSource = FusedLocationSource(this, PERMISSION_REQUEST_CODE)
     }
 
     private fun setupView() {

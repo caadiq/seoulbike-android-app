@@ -7,13 +7,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.RowNearStationBinding
-import com.beemer.seoulbike.model.dto.NearbyStationListDto
+import com.beemer.seoulbike.model.dto.StationListDto
 import com.beemer.seoulbike.view.diff.StationListDiffUtil
 import com.beemer.seoulbike.view.utils.UnitConversion.formatDistance
 
 class StationAdapter : RecyclerView.Adapter<StationAdapter.ViewHolder>() {
-    private var itemList = mutableListOf<NearbyStationListDto>()
-    private var onItemClickListener: ((NearbyStationListDto, Int) -> Unit)? = null
+    private var itemList = mutableListOf<StationListDto>()
+    private var onItemClickListener: ((StationListDto, Int) -> Unit)? = null
 
     override fun getItemCount(): Int = itemList.size
 
@@ -37,7 +37,7 @@ class StationAdapter : RecyclerView.Adapter<StationAdapter.ViewHolder>() {
             }
         }
 
-        fun bind(item: NearbyStationListDto) {
+        fun bind(item: StationListDto) {
             binding.txtName.text = "${item.stationNo.replace("^0+".toRegex(), "")}. ${item.stationNm}"
             binding.txtAddress.text = item.stationDetails.addr1
             binding.txtDistance.text = item.distance?.let { formatDistance(it)}
@@ -54,11 +54,11 @@ class StationAdapter : RecyclerView.Adapter<StationAdapter.ViewHolder>() {
         }
     }
 
-    fun setOnItemClickListener(listener: (NearbyStationListDto, Int) -> Unit) {
+    fun setOnItemClickListener(listener: (StationListDto, Int) -> Unit) {
         onItemClickListener = listener
     }
 
-    fun setItemList(list: List<NearbyStationListDto>) {
+    fun setItemList(list: List<StationListDto>) {
         val diffCallBack = StationListDiffUtil(itemList, list)
         val diffResult = DiffUtil.calculateDiff(diffCallBack)
 

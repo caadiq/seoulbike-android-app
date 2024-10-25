@@ -11,7 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.DialogStationDetailsBinding
-import com.beemer.seoulbike.model.dto.NearbyStationListDto
+import com.beemer.seoulbike.model.dto.StationListDto
 import com.beemer.seoulbike.view.utils.UnitConversion.formatDistance
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
@@ -20,7 +20,7 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 
-class StationDetailsDialog(private val item: NearbyStationListDto) : DialogFragment(), OnMapReadyCallback {
+class StationDetailsDialog(private val item: StationListDto) : DialogFragment(), OnMapReadyCallback {
     private var _binding: DialogStationDetailsBinding? = null
     private val binding get() = _binding!!
 

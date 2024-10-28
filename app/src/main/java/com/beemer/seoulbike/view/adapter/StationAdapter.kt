@@ -2,10 +2,8 @@ package com.beemer.seoulbike.view.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.RowStationsBinding
 import com.beemer.seoulbike.model.dto.StationListDto
 import com.beemer.seoulbike.view.diff.StationListDiffUtil
@@ -38,18 +36,11 @@ class StationAdapter : RecyclerView.Adapter<StationAdapter.ViewHolder>() {
         }
 
         fun bind(item: StationListDto) {
-            binding.txtName.text = "${item.stationNo.replace("^0+".toRegex(), "")}. ${item.stationNm}"
+            binding.txtNo.text = item.stationNo.replace("^0+".toRegex(), "")
+            binding.txtName.text = item.stationNm
             binding.txtDistance.text = item.distance?.let { formatDistance(it)}
-            binding.txtParking.text = item.stationStatus.parkingCnt.toString()
-            binding.txtRack.text = item.stationStatus.rackCnt.toString()
-
-            binding.txtParking.setTextColor(
-                when (item.stationStatus.parkingCnt) {
-                    0 -> ContextCompat.getColor(binding.root.context, R.color.red)
-                    in 1..3 -> ContextCompat.getColor(binding.root.context, R.color.yellow)
-                    else -> ContextCompat.getColor(binding.root.context, R.color.colorPrimary)
-                }
-            )
+            binding.txtQrBike.text = item.stationStatus.qrBikeCnt.toString()
+            binding.txtElecBike.text = item.stationStatus.elecBikeCnt.toString()
         }
     }
 

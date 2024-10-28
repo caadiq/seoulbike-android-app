@@ -8,7 +8,6 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.DialogStationDetailsBinding
@@ -18,6 +17,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
@@ -81,17 +81,22 @@ class StationDetailsDialog(private val item: StationListDto) : DialogFragment(),
         naverMap.locationTrackingMode = LocationTrackingMode.NoFollow
         getLocation(naverMap)
 
+        // 카메라 설정
+        naverMap.minZoom = 14.5
+        naverMap.maxZoom = 18.0
+        naverMap.extent = LatLngBounds(LatLng(37.413294, 126.734086), LatLng(37.715133, 127.269311))
+
         // 카메라 이동
         val lat = item.stationDetails.lat
         val lon = item.stationDetails.lon
 
         if (lat != null && lon != null) {
-            val cameraUpdate = CameraUpdate.scrollAndZoomTo(LatLng(lat, lon.toDouble()), 15.5)
+            val cameraUpdate = CameraUpdate.scrollAndZoomTo(LatLng(lat, lon), 15.3)
             naverMap.moveCamera(cameraUpdate)
 
             Marker().apply {
                 position = LatLng(lat, lon)
-                icon = OverlayImage.fromResource(R.drawable.icon_marker)
+                icon = OverlayImage.fromResource(R.drawable.icon_marker_custom)
                 width = 160
                 height = 160
                 map = naverMap
@@ -120,17 +125,10 @@ class StationDetailsDialog(private val item: StationListDto) : DialogFragment(),
     private fun setupView() {
         binding.txtName.text = "${item.stationNo.replace("^0+".toRegex(), "")}. ${item.stationNm}"
         binding.txtAddress.text = item.stationDetails.addr1
-        binding.txtParking.text = item.stationStatus.parkingCnt.toString()
+        binding.txtQrBike.text = item.stationStatus.qrBikeCnt.toString()
+        binding.txtElecBike.text = item.stationStatus.elecBikeCnt.toString()
         binding.txtRack.text = item.stationStatus.rackCnt.toString()
         binding.txtDistance.text = item.distance?.let { formatDistance(it) }
-
-        binding.txtParking.setTextColor(
-            when (item.stationStatus.parkingCnt) {
-                0 -> ContextCompat.getColor(binding.root.context, R.color.red)
-                in 1..3 -> ContextCompat.getColor(binding.root.context, R.color.yellow)
-                else -> ContextCompat.getColor(binding.root.context, R.color.colorPrimary)
-            }
-        )
     }
 
     @SuppressLint("MissingPermission")

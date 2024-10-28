@@ -21,6 +21,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.geometry.LatLngBounds
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
@@ -93,6 +94,12 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
         getLocation(naverMap)
 
+        // 카메라 설정
+        naverMap.minZoom = 13.5
+        naverMap.maxZoom = 18.0
+        naverMap.extent = LatLngBounds(LatLng(37.413294, 126.734086), LatLng(37.715133, 127.269311))
+
+        // 카메라 이동시
         naverMap.addOnLocationChangeListener { location ->
             val lat = location.latitude
             val lon = location.longitude
@@ -100,6 +107,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             bikeViewModel.setMyLocation(lat, lon)
         }
 
+        // 카메라 이동 후 멈출 때
         naverMap.addOnCameraIdleListener {
             if (isInitialLocationSet) {
                 val cameraPosition = naverMap.cameraPosition
@@ -153,25 +161,26 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     val lat = station.stationDetails.lat
                     val lon = station.stationDetails.lon
 
-                    if (lat != null && lon != null) {
-                        station.stationStatus.parkingCnt?.let { count ->
-                            val markerBinding = MarkerCustomBinding.inflate(LayoutInflater.from(context))
-                            markerBinding.txtCount.text = "${count}대"
+                    val qrBikeCnt = station.stationStatus.qrBikeCnt
+                    val elecBikeCnt = station.stationStatus.elecBikeCnt
 
-                            val marker = Marker().apply {
-                                position = LatLng(lat, lon)
-                                icon = OverlayImage.fromView(markerBinding.root)
-                                anchor = PointF(0.2f, 1.0f)
-                                onClickListener = Overlay.OnClickListener {
-                                    StationStatusBottomsheetDialog(
-                                        item = station
-                                    ).show(childFragmentManager, "StatusBottomsheetDialog")
-                                    true
-                                }
-                                map = naverMap
+                    if (lat != null && lon != null && qrBikeCnt != null && elecBikeCnt != null) {
+                        val markerBinding = MarkerCustomBinding.inflate(LayoutInflater.from(context))
+                        markerBinding.txtCount.text = "${qrBikeCnt + elecBikeCnt}대"
+
+                        val marker = Marker().apply {
+                            position = LatLng(lat, lon)
+                            icon = OverlayImage.fromView(markerBinding.root)
+                            anchor = PointF(0.2f, 1.0f)
+                            onClickListener = Overlay.OnClickListener {
+                                StationStatusBottomsheetDialog(
+                                    item = station
+                                ).show(childFragmentManager, "StatusBottomsheetDialog")
+                                true
                             }
-                            markerList.add(marker)
+                            map = naverMap
                         }
+                        markerList.add(marker)
                     }
                 }
             }
@@ -209,9 +218,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     private fun getNearbyStations(mapLat: Double, mapLon: Double, zoomLevel: Double) {
         val distance = when (zoomLevel) {
-            in 0.0..13.0 -> null
-            in 13.5..14.0 -> 2000.0
-            in 14.0..14.5 -> 1500.0
+            in 13.5..14.5 -> 1500.0
             in 14.5..15.0 -> 1000.0
             in 15.0..15.5 -> 700.0
             in 15.5..16.0 -> 500.0
@@ -219,7 +226,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             in 16.5..17.0 -> 200.0
             in 17.0..17.5 -> 150.0
             in 17.5..18.0 -> 100.0
-            in 18.0..21.0 -> 50.0
             else -> null
         }
 

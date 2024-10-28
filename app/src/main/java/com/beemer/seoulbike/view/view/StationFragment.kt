@@ -1,20 +1,17 @@
 package com.beemer.seoulbike.view.view
 
 import android.annotation.SuppressLint
+import android.location.Geocoder
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.FragmentStationBinding
+import com.beemer.seoulbike.view.adapter.BookmarkAdapter
 import com.beemer.seoulbike.view.adapter.StationAdapter
-import com.beemer.seoulbike.view.utils.DateTimeConverter.convertDateTime
 import com.beemer.seoulbike.viewmodel.BikeViewModel
-import com.beemer.seoulbike.viewmodel.MainViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -26,9 +23,9 @@ class StationFragment : Fragment() {
     private var _binding : FragmentStationBinding? = null
     private val binding get() = _binding!!
 
-    private val mainViewModel by viewModels<MainViewModel>()
     private val bikeViewModel by viewModels<BikeViewModel>()
 
+    private val bookmarkAdapter = BookmarkAdapter()
     private val stationAdapter = StationAdapter()
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -47,6 +44,7 @@ class StationFragment : Fragment() {
         setupView()
         setupRecyclerView()
         setupViewModel()
+        getLocation()
     }
 
     override fun onDestroyView() {
@@ -58,49 +56,29 @@ class StationFragment : Fragment() {
         binding.progressIndicator.show()
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            mainViewModel.distance.value?.let { distance ->
-                getLocation(distance)
-            }
+            getLocation()
         }
 
         binding.btnRetry.setOnClickListener {
-            mainViewModel.distance.value?.let { distance ->
-                getLocation(distance)
-                binding.progressIndicator.show()
-            }
-        }
-
-        val items = listOf("500m 이내", "1km 이내", "2km 이내")
-        val adapter = ArrayAdapter(requireContext(), R.layout.spinner_selected, R.id.txtTitle, items)
-        adapter.setDropDownViewResource(R.layout.spinner_item)
-        binding.spinner.apply {
-            this.adapter = adapter
-            binding.spinner.setSelection(1)
-            onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    when (position) {
-                        0 -> {
-                            mainViewModel.setDistance(500.0)
-                            mainViewModel.setEmptyListText("500m 이내에 대여소가 없습니다.")
-                        }
-                        1 -> {
-                            mainViewModel.setDistance(1000.0)
-                            mainViewModel.setEmptyListText("1km 이내에 대여소가 없습니다.")
-                        }
-                        2 -> {
-                            mainViewModel.setDistance(2000.0)
-                            mainViewModel.setEmptyListText("2km 이내에 대여소가 없습니다.")
-                        }
-                    }
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) { }
-            }
+            getLocation()
+            binding.progressIndicator.show()
         }
     }
 
     private fun setupRecyclerView() {
-        binding.recyclerView.apply {
+        binding.recyclerBookmark.apply {
+            adapter = bookmarkAdapter
+            setHasFixedSize(true)
+            itemAnimator = null
+        }
+
+        bookmarkAdapter.setOnItemClickListener { item, _ ->
+            StationDetailsDialog(
+                item = item
+            ).show(childFragmentManager, "DetailsDialog")
+        }
+
+        binding.recyclerStation.apply {
             adapter = stationAdapter
             setHasFixedSize(true)
             itemAnimator = null
@@ -114,18 +92,6 @@ class StationFragment : Fragment() {
     }
 
     private fun setupViewModel() {
-        mainViewModel.apply {
-            distance.observe(viewLifecycleOwner) { distance ->
-                stationAdapter.setItemList(emptyList())
-                getLocation(distance)
-                binding.progressIndicator.show()
-            }
-
-            emptyListText.observe(viewLifecycleOwner) { text ->
-                binding.txtEmptyList.text = text
-            }
-        }
-
         bikeViewModel.apply {
             nearbyStations.observe(viewLifecycleOwner) { stations ->
                 binding.progressIndicator.hide()
@@ -133,12 +99,8 @@ class StationFragment : Fragment() {
                 binding.txtEmptyList.visibility = if (stations.isEmpty()) View.VISIBLE else View.GONE
 
                 stationAdapter.setItemList(
-                    stations.filter { it.stationStatus.parkingCnt != null }.sortedBy { it.distance }
+                    stations.filter { it.stationStatus.qrBikeCnt != null }.sortedBy { it.distance }
                 )
-
-                stations[0].stationStatus.updateTime?.let {
-                    binding.txtUpdate.text = "${convertDateTime(it, "yyyy-MM-dd'T'HH:mm:ss", "HH:mm:ss", Locale.KOREA)} 기준"
-                }
             }
 
             errorMessage.observe(viewLifecycleOwner) { message ->
@@ -155,14 +117,22 @@ class StationFragment : Fragment() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun getLocation(distance: Double) {
+    private fun getLocation() {
         fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).addOnSuccessListener {
             val lat = it.latitude
             val lon = it.longitude
 
+            val geocoder = Geocoder(requireContext(), Locale.KOREA)
+            val addresses = geocoder.getFromLocation(lat, lon, 1)
+            val fullAddress = addresses?.get(0)?.getAddressLine(0) ?: "위치를 찾을 수 없습니다."
+            val addressParts = fullAddress.split(" ")
+            val shortAddress = if (addressParts.size >= 4) "${addressParts[2]} ${addressParts[3]}" else ""
+
+            binding.txtAddress.text = shortAddress
+
             binding.txtError.visibility = View.GONE
             binding.btnRetry.visibility = View.GONE
-            bikeViewModel.getNearbyStations(lat, lon, lat, lon, distance)
+            bikeViewModel.getNearbyStations(lat, lon, lat, lon, 700.0)
         }.addOnFailureListener { }
     }
 }

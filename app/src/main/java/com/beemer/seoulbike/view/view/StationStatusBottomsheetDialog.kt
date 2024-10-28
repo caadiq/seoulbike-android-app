@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
-import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.BottomsheetdialogStationStatusBinding
 import com.beemer.seoulbike.model.dto.StationListDto
 import com.beemer.seoulbike.view.utils.DateTimeConverter.convertDateTime
@@ -36,16 +34,8 @@ class StationStatusBottomsheetDialog(private val item: StationListDto) : BottomS
     private fun setupView() {
         item.stationStatus.updateTime?.let { binding.txtUpdate.text = convertDateTime(it, "yyyy-MM-dd'T'HH:mm:ss", "HH:mm:ss", Locale.KOREA) }
         binding.txtName.text = "${item.stationNo.replace("^0+".toRegex(), "")}. ${item.stationNm}"
-        binding.txtParking.text = item.stationStatus.parkingCnt.toString()
-        binding.txtRack.text = item.stationStatus.rackCnt.toString()
+        binding.txtQrBike.text = item.stationStatus.qrBikeCnt.toString()
+        binding.txtElecBike.text = item.stationStatus.elecBikeCnt.toString()
         binding.txtDistance.text = item.distance?.let { formatDistance(it) }
-
-        binding.txtParking.setTextColor(
-            when (item.stationStatus.parkingCnt) {
-                0 -> ContextCompat.getColor(binding.root.context, R.color.red)
-                in 1..3 -> ContextCompat.getColor(binding.root.context, R.color.yellow)
-                else -> ContextCompat.getColor(binding.root.context, R.color.colorPrimary)
-            }
-        )
     }
 }

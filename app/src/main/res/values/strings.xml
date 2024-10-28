@@ -9,12 +9,19 @@
     <string name="str_map_reload">새로고침</string>
 
     <!--fragment_station.xml-->
+    <string name="str_station_bookmark">즐겨찾기</string>
+    <string name="str_station_nearby">내 주변 대여소</string>
     <string name="str_station_retry">재시도</string>
     <string name="str_station_error_network">네트워크 오류가 발생했습니다.</string>
+    <string name="str_station_no_stations">500m 이내 대여소가 없습니다.</string>
+
+    <!--row_station_empty_bookmark.xml-->
+    <string name="str_station_no_bookmark">즐겨찾는 대여소가 없습니다.</string>
 
     <!--dialog_bottomsheet_status.xml-->
     <string name="str_bottomsheet_status_update">업데이트</string>
-    <string name="str_bottomsheet_status_parking">대여가능</string>
+    <string name="str_bottomsheet_status_qrbike">일반</string>
+    <string name="str_bottomsheet_status_elecbike">새싹</string>
     <string name="str_bottomsheet_status_rack">거치대</string>
 
     <!--MainActivity.kt-->

@@ -9,10 +9,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.viewModels
 import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.DialogStationDetailsBinding
 import com.beemer.seoulbike.model.dto.StationListDto
+import com.beemer.seoulbike.model.entity.FavoriteStationEntity
 import com.beemer.seoulbike.view.utils.UnitConversion.formatDistance
+import com.beemer.seoulbike.viewmodel.FavoriteStationViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -25,10 +28,14 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.util.FusedLocationSource
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class StationDetailsDialog(private val item: StationListDto) : DialogFragment(), OnMapReadyCallback {
     private var _binding: DialogStationDetailsBinding? = null
     private val binding get() = _binding!!
+
+    private val favoriteStationViewModel by viewModels<FavoriteStationViewModel>()
 
     private val PERMISSION_REQUEST_CODE = 1001
 
@@ -51,6 +58,7 @@ class StationDetailsDialog(private val item: StationListDto) : DialogFragment(),
         setupDialog()
         setupMap()
         setupView()
+        setupViewModel()
     }
 
     override fun onDestroyView() {
@@ -129,6 +137,36 @@ class StationDetailsDialog(private val item: StationListDto) : DialogFragment(),
         binding.txtElecBike.text = item.stationStatus.elecBikeCnt.toString()
         binding.txtRack.text = item.stationStatus.rackCnt.toString()
         binding.txtDistance.text = item.distance?.let { formatDistance(it) }
+
+        binding.lottie.apply {
+            setOnClickListener {
+                if (binding.lottie.progress == 1.0f) {
+                    DefaultDialog(
+                        title = null,
+                        message = "즐겨찾기에서 삭제하시겠습니까?",
+                        onConfirm = {
+                            favoriteStationViewModel.deleteFavoriteStation(item.stationId)
+                            progress = 0.0f
+                            cancelAnimation()
+                        }
+                    ).show(childFragmentManager, "DefaultDialog")
+                } else if (binding.lottie.progress == 0.0f) {
+                    favoriteStationViewModel.insertFavoriteStation(FavoriteStationEntity(stationId = item.stationId))
+                    playAnimation()
+                }
+            }
+        }
+    }
+
+    private fun setupViewModel() {
+        favoriteStationViewModel.apply {
+            checkFavoriteExists(item.stationId)
+
+            isFavoriteExists.observe(viewLifecycleOwner) { exists ->
+                if (exists)
+                    binding.lottie.playAnimation()
+            }
+        }
     }
 
     @SuppressLint("MissingPermission")

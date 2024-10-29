@@ -14,6 +14,9 @@ interface FavoriteStationDao {
     @Query("SELECT * FROM favorite LIMIT 5")
     fun getTop5FavoriteStation(): LiveData<List<FavoriteStationEntity>>
 
+    @Query("SELECT * FROM favorite WHERE stationId = :stationId LIMIT 1")
+    suspend fun getFavoriteStationByStationId(stationId: String): FavoriteStationEntity?
+
     @Insert
     suspend fun insertFavoriteStation(favoriteStation: FavoriteStationEntity)
 

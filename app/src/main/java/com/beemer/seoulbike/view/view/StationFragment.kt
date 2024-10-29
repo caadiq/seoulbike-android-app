@@ -3,6 +3,7 @@ package com.beemer.seoulbike.view.view
 import android.annotation.SuppressLint
 import android.location.Geocoder
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -133,7 +134,10 @@ class StationFragment : Fragment(), BookmarkAdapter.OnFavoriteClickListener, Sta
             }
 
             favoriteStation.observe(viewLifecycleOwner) { stations ->
+                Log.d("테스트", "stations: $stations")
+
                 val favoriteStationIds = stations.map { it.stationId }
+                Log.d("테스트", "favoriteStationIds: $favoriteStationIds")
                 bookmarkAdapter.setFavoriteStation(favoriteStationIds)
                 stationAdapter.setFavoriteStation(favoriteStationIds)
 

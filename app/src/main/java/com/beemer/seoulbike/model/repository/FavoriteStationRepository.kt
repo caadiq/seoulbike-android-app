@@ -8,6 +8,8 @@ class FavoriteStationRepository(private val dao: FavoriteStationDao) {
 
     fun getTop5FavoriteStation() = dao.getTop5FavoriteStation()
 
+    suspend fun getFavoriteStationByStationId(stationId: String) = dao.getFavoriteStationByStationId(stationId)
+
     suspend fun insertFavoriteStation(favoriteStation: FavoriteStationEntity) = dao.insertFavoriteStation(favoriteStation)
 
     suspend fun deleteFavoriteStationByStationId(stationId: String) = dao.deleteFavoriteStationByStationId(stationId)

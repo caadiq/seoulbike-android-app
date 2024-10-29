@@ -7,11 +7,11 @@
     android:background="@drawable/rectangle_primary_rounded_8dp_dash">
 
     <androidx.appcompat.widget.AppCompatTextView
-        android:id="@+id/txtNoBookmark"
+        android:id="@+id/txtNoFavorite"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/nanum_square_neo_regular"
-        android:text="@string/str_station_no_bookmark"
+        android:text="@string/str_station_no_favorite"
         android:textColor="@color/colorPrimary"
         android:textSize="15dp"
         app:layout_constraintBottom_toBottomOf="parent"

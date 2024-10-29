@@ -5,13 +5,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
-import com.beemer.seoulbike.databinding.RowStationBookmarkBinding
-import com.beemer.seoulbike.databinding.RowStationEmptyBookmarkBinding
+import com.beemer.seoulbike.databinding.RowStationEmptyFavoriteBinding
+import com.beemer.seoulbike.databinding.RowStationFavoriteBinding
 import com.beemer.seoulbike.model.dto.StationListDto
 import com.beemer.seoulbike.view.diff.StationListDiffUtil
 import com.beemer.seoulbike.view.utils.UnitConversion.formatDistance
 
-class BookmarkAdapter(private val listener: OnFavoriteClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class FavoriteAdapter(private val listener: OnFavoriteClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     interface OnFavoriteClickListener {
         fun setOnFavoriteClick(item: StationListDto, lottie: LottieAnimationView)
     }
@@ -35,10 +35,10 @@ class BookmarkAdapter(private val listener: OnFavoriteClickListener) : RecyclerV
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         return if (viewType == VIEW_TYPE_EMPTY) {
-            val binding = RowStationEmptyBookmarkBinding.inflate(inflater, parent, false)
+            val binding = RowStationEmptyFavoriteBinding.inflate(inflater, parent, false)
             EmptyViewHolder(binding)
         } else {
-            val binding = RowStationBookmarkBinding.inflate(inflater, parent, false)
+            val binding = RowStationFavoriteBinding.inflate(inflater, parent, false)
             ViewHolder(binding)
         }
     }
@@ -49,7 +49,7 @@ class BookmarkAdapter(private val listener: OnFavoriteClickListener) : RecyclerV
         }
     }
 
-    inner class ViewHolder(private val binding: RowStationBookmarkBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: RowStationFavoriteBinding) : RecyclerView.ViewHolder(binding.root) {
         init {
             itemView.setOnClickListener {
                 val position = bindingAdapterPosition
@@ -79,7 +79,7 @@ class BookmarkAdapter(private val listener: OnFavoriteClickListener) : RecyclerV
         }
     }
 
-    inner class EmptyViewHolder(binding: RowStationEmptyBookmarkBinding) : RecyclerView.ViewHolder(binding.root)
+    inner class EmptyViewHolder(binding: RowStationEmptyFavoriteBinding) : RecyclerView.ViewHolder(binding.root)
 
     fun setOnItemClickListener(listener: (StationListDto, Int) -> Unit) {
         onItemClickListener = listener

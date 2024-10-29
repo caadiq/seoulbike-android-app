@@ -3,7 +3,6 @@ package com.beemer.seoulbike.view.view
 import android.annotation.SuppressLint
 import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.beemer.seoulbike.databinding.FragmentStationBinding
 import com.beemer.seoulbike.model.dto.StationListDto
 import com.beemer.seoulbike.model.entity.FavoriteStationEntity
-import com.beemer.seoulbike.view.adapter.BookmarkAdapter
+import com.beemer.seoulbike.view.adapter.FavoriteAdapter
 import com.beemer.seoulbike.view.adapter.StationAdapter
 import com.beemer.seoulbike.viewmodel.BikeViewModel
 import com.beemer.seoulbike.viewmodel.FavoriteStationViewModel
@@ -24,14 +23,14 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 
 @AndroidEntryPoint
-class StationFragment : Fragment(), BookmarkAdapter.OnFavoriteClickListener, StationAdapter.OnFavoriteClickListener {
+class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, StationAdapter.OnFavoriteClickListener {
     private var _binding : FragmentStationBinding? = null
     private val binding get() = _binding!!
 
     private val favoriteStationViewModel by viewModels<FavoriteStationViewModel>()
     private val bikeViewModel by viewModels<BikeViewModel>()
 
-    private lateinit var  bookmarkAdapter: BookmarkAdapter
+    private lateinit var  favoriteAdapter: FavoriteAdapter
     private lateinit var stationAdapter: StationAdapter
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -96,11 +95,11 @@ class StationFragment : Fragment(), BookmarkAdapter.OnFavoriteClickListener, Sta
     }
 
     private fun setupRecyclerView() {
-        bookmarkAdapter = BookmarkAdapter(this)
+        favoriteAdapter = FavoriteAdapter(this)
         stationAdapter = StationAdapter(this)
 
-        binding.recyclerBookmark.apply {
-            adapter = bookmarkAdapter
+        binding.recyclerFavorite.apply {
+            adapter = favoriteAdapter
             setHasFixedSize(true)
             itemAnimator = null
         }
@@ -111,7 +110,7 @@ class StationFragment : Fragment(), BookmarkAdapter.OnFavoriteClickListener, Sta
             itemAnimator = null
         }
 
-        bookmarkAdapter.setOnItemClickListener { item, _ ->
+        favoriteAdapter.setOnItemClickListener { item, _ ->
             StationDetailsDialog(
                 item = item
             ).show(childFragmentManager, "DetailsDialog")
@@ -128,26 +127,23 @@ class StationFragment : Fragment(), BookmarkAdapter.OnFavoriteClickListener, Sta
         favoriteStationViewModel.apply {
             top5FavoriteStation.observe(viewLifecycleOwner) { stations ->
                 if (stations.isEmpty())
-                    bookmarkAdapter.setItemList(emptyList())
+                    favoriteAdapter.setItemList(emptyList())
                 else
                     bikeViewModel.getFavoriteStations(lat, lon, null, null, stations.map { it.stationId })
             }
 
             favoriteStation.observe(viewLifecycleOwner) { stations ->
-                Log.d("테스트", "stations: $stations")
-
                 val favoriteStationIds = stations.map { it.stationId }
-                Log.d("테스트", "favoriteStationIds: $favoriteStationIds")
-                bookmarkAdapter.setFavoriteStation(favoriteStationIds)
+                favoriteAdapter.setFavoriteStation(favoriteStationIds)
                 stationAdapter.setFavoriteStation(favoriteStationIds)
 
-                binding.txtBookmarkCount.text = stations.size.toString()
+                binding.txtFavoriteCount.text = stations.size.toString()
             }
         }
 
         bikeViewModel.apply {
             favoriteStations.observe(viewLifecycleOwner) { stations ->
-                bookmarkAdapter.setItemList(stations)
+                favoriteAdapter.setItemList(stations)
             }
 
             nearbyStations.observe(viewLifecycleOwner) { stations ->

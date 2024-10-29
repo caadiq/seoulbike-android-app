@@ -24,7 +24,7 @@
                 android:layout_height="wrap_content">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/layoutBookmark"
+                    android:id="@+id/layoutFavorite"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="32dp"
@@ -33,18 +33,18 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtBookmark"
+                        android:id="@+id/txtFavorite"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/nanum_square_neo_bold"
-                        android:text="@string/str_station_bookmark"
+                        android:text="@string/str_station_favorite"
                         android:textColor="@color/colorSecondary"
                         android:textSize="17dp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtBookmarkCount"
+                        android:id="@+id/txtFavoriteCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
@@ -52,9 +52,9 @@
                         android:text="0"
                         android:textColor="@color/colorPrimary"
                         android:textSize="17dp"
-                        app:layout_constraintBottom_toBottomOf="@+id/txtBookmark"
-                        app:layout_constraintStart_toEndOf="@+id/txtBookmark"
-                        app:layout_constraintTop_toTopOf="@+id/txtBookmark"
+                        app:layout_constraintBottom_toBottomOf="@+id/txtFavorite"
+                        app:layout_constraintStart_toEndOf="@+id/txtFavorite"
+                        app:layout_constraintTop_toTopOf="@+id/txtFavorite"
                         tools:text="10" />
 
                     <androidx.appcompat.widget.AppCompatImageView
@@ -63,16 +63,16 @@
                         android:layout_height="0dp"
                         android:padding="2dp"
                         android:tint="@color/gray"
-                        app:layout_constraintBottom_toBottomOf="@+id/txtBookmarkCount"
+                        app:layout_constraintBottom_toBottomOf="@+id/txtFavoriteCount"
                         app:layout_constraintDimensionRatio="H,1:1"
-                        app:layout_constraintStart_toEndOf="@+id/txtBookmarkCount"
-                        app:layout_constraintTop_toTopOf="@+id/txtBookmarkCount"
+                        app:layout_constraintStart_toEndOf="@+id/txtFavoriteCount"
+                        app:layout_constraintTop_toTopOf="@+id/txtFavoriteCount"
                         app:srcCompat="@drawable/icon_arrow_right" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerBookmark"
+                    android:id="@+id/recyclerFavorite"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
@@ -84,8 +84,8 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/layoutBookmark"
-                    tools:listitem="@layout/row_station_bookmark" />
+                    app:layout_constraintTop_toBottomOf="@+id/layoutFavorite"
+                    tools:listitem="@layout/row_station_favorite" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtStation"
@@ -96,8 +96,8 @@
                     android:text="@string/str_station_nearby"
                     android:textColor="@color/colorSecondary"
                     android:textSize="17dp"
-                    app:layout_constraintStart_toStartOf="@+id/layoutBookmark"
-                    app:layout_constraintTop_toBottomOf="@+id/recyclerBookmark" />
+                    app:layout_constraintStart_toStartOf="@+id/layoutFavorite"
+                    app:layout_constraintTop_toBottomOf="@+id/recyclerFavorite" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgMarker"
@@ -105,7 +105,7 @@
                     android:layout_height="16dp"
                     android:tint="@color/colorPrimary"
                     app:layout_constraintBottom_toBottomOf="@+id/txtAddress"
-                    app:layout_constraintStart_toStartOf="@+id/layoutBookmark"
+                    app:layout_constraintStart_toStartOf="@+id/layoutFavorite"
                     app:layout_constraintTop_toTopOf="@+id/txtAddress"
                     app:srcCompat="@drawable/oval_transparent_primary_outlined_4dp" />
 

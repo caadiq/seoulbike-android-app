@@ -35,8 +35,8 @@ class StationFragment : Fragment(), BookmarkAdapter.OnFavoriteClickListener, Sta
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
-    private var lat = 0.0
-    private var lon = 0.0
+    private var lat: Double? = null
+    private var lon: Double? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentStationBinding.inflate(inflater, container, false)
@@ -51,6 +51,7 @@ class StationFragment : Fragment(), BookmarkAdapter.OnFavoriteClickListener, Sta
 
         setupView()
         setupRecyclerView()
+        setupViewModel()
         getLocation()
     }
 
@@ -122,7 +123,10 @@ class StationFragment : Fragment(), BookmarkAdapter.OnFavoriteClickListener, Sta
     private fun setupViewModel() {
         favoriteStationViewModel.apply {
             top5FavoriteStation.observe(viewLifecycleOwner) { stations ->
-                bikeViewModel.getFavoriteStations(lat, lon, null, null, stations.map { it.stationId })
+                if (stations.isEmpty())
+                    bookmarkAdapter.setItemList(emptyList())
+                else
+                    bikeViewModel.getFavoriteStations(lat, lon, null, null, stations.map { it.stationId })
             }
 
             favoriteStation.observe(viewLifecycleOwner) { stations ->
@@ -163,13 +167,11 @@ class StationFragment : Fragment(), BookmarkAdapter.OnFavoriteClickListener, Sta
     @SuppressLint("MissingPermission")
     private fun getLocation() {
         fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).addOnSuccessListener {
-            setupViewModel()
-
             lat = it.latitude
             lon = it.longitude
 
             val geocoder = Geocoder(requireContext(), Locale.KOREA)
-            val addresses = geocoder.getFromLocation(lat, lon, 1)
+            val addresses = geocoder.getFromLocation(lat!!, lon!!, 1)
             val fullAddress = addresses?.get(0)?.getAddressLine(0) ?: "위치를 찾을 수 없습니다."
             val addressParts = fullAddress.split(" ")
             val shortAddress = if (addressParts.size >= 4) "${addressParts[2]} ${addressParts[3]}" else ""
@@ -178,7 +180,7 @@ class StationFragment : Fragment(), BookmarkAdapter.OnFavoriteClickListener, Sta
 
             binding.txtError.visibility = View.GONE
             binding.btnRetry.visibility = View.GONE
-            bikeViewModel.getNearbyStations(lat, lon, lat, lon, 500.0)
+            bikeViewModel.getNearbyStations(lat!!, lon!!, lat!!, lon!!, 500.0)
         }.addOnFailureListener { }
     }
 }

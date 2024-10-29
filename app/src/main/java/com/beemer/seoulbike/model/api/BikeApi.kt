@@ -30,8 +30,8 @@ interface BikeApi {
 
     @POST("/api/seoulbike/stations")
     fun getFavoriteStations(
-        @Query("my_lat") myLat: Double,
-        @Query("my_lon") myLon: Double,
+        @Query("my_lat") myLat: Double?,
+        @Query("my_lon") myLon: Double?,
         @Query("page") page: Int?,
         @Query("limit") limit: Int?,
         @Body stationId: List<String>

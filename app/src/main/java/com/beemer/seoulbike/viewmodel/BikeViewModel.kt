@@ -77,7 +77,7 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
         }
     }
 
-    fun getFavoriteStations(myLat: Double, myLon: Double, page: Int?, limit: Int?, stationId: List<String>) {
+    fun getFavoriteStations(myLat: Double?, myLon: Double?, page: Int?, limit: Int?, stationId: List<String>) {
         viewModelScope.launch {
             when (val result = repository.getFavoriteStations(myLat, myLon, page, limit, stationId)) {
                 is ApiUtils.Results.Success -> {
@@ -98,6 +98,4 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
     fun setMyLocation(lat: Double, lon: Double) {
         _myLocation.postValue(Pair(lat, lon))
     }
-
-
 }

@@ -82,6 +82,9 @@ class StationFragment : Fragment(), BookmarkAdapter.OnFavoriteClickListener, Sta
         binding.swipeRefreshLayout.isRefreshing = true
 
         binding.swipeRefreshLayout.setOnRefreshListener {
+            favoriteStationViewModel.top5FavoriteStation.value?.let { stations ->
+                bikeViewModel.getFavoriteStations(lat, lon, null, null, stations.map { it.stationId })
+            }
             getLocation()
         }
 
@@ -145,6 +148,7 @@ class StationFragment : Fragment(), BookmarkAdapter.OnFavoriteClickListener, Sta
 
             nearbyStations.observe(viewLifecycleOwner) { stations ->
                 binding.swipeRefreshLayout.isRefreshing = false
+                binding.layoutBody.visibility = View.VISIBLE
                 binding.txtEmptyList.visibility = if (stations.isEmpty()) View.VISIBLE else View.GONE
 
                 stationAdapter.setItemList(
@@ -155,6 +159,7 @@ class StationFragment : Fragment(), BookmarkAdapter.OnFavoriteClickListener, Sta
             errorMessage.observe(viewLifecycleOwner) { message ->
                 if (message != null) {
                     binding.swipeRefreshLayout.isRefreshing = false
+                    binding.layoutBody.visibility = View.GONE
                     binding.txtEmptyList.visibility = View.GONE
 
                     binding.txtError.visibility = View.VISIBLE

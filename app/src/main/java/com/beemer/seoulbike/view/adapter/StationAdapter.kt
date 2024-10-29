@@ -48,7 +48,13 @@ class StationAdapter(private val listener: OnFavoriteClickListener,) : RecyclerV
             binding.txtDistance.text = item.distance?.let { formatDistance(it)}
             binding.txtQrBike.text = item.stationStatus.qrBikeCnt.toString()
             binding.txtElecBike.text = item.stationStatus.elecBikeCnt.toString()
-            if (item.stationId in favoriteStationId) binding.lottie.playAnimation() else binding.lottie.progress = 0.0f
+
+            if (item.stationId in favoriteStationId) {
+                if (binding.lottie.progress == 0.0f)
+                    binding.lottie.playAnimation()
+            } else {
+                binding.lottie.progress = 0.0f
+            }
 
             binding.lottie.setOnClickListener {
                 listener.setOnFavoriteClick(item, binding.lottie)

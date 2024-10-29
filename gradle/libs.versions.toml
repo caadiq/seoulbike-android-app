@@ -12,6 +12,7 @@ espressoCore = "3.6.1"
 coreKtx = "1.13.1"
 appcompat = "1.7.0"
 constraintlayout = "2.1.4"
+room = "2.6.1"
 
 material = "1.12.0"
 location = "21.3.0"
@@ -22,6 +23,7 @@ hiltX = "1.2.0"
 naverMaps = "3.19.1"
 retrofit = "2.11.0"
 progressButton = "2.1.0"
+lottie = "6.5.2"
 
 
 [libraries]
@@ -34,6 +36,9 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
 # google
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
@@ -49,6 +54,7 @@ naver-maps = { group = "com.naver.maps", name = "map-sdk", version.ref = "naverM
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
 progress-button = { group = "com.github.razir.progressbutton", name = "progressbutton", version.ref = "progressButton" }
+lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottie" }
 
 
 [plugins]

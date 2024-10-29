@@ -17,4 +17,8 @@ class BikeRepository @Inject constructor(retrofit: Retrofit) {
     suspend fun getStations(myLat: Double, myLon: Double, page: Int?, limit: Int?, query: String): ApiUtils.Results<StationSearchDto> {
         return ApiUtils.safeApiCall(bikeApi.getStations(myLat, myLon, page, limit, query))
     }
+
+    suspend fun getFavoriteStations(myLat: Double, myLon: Double, page: Int?, limit: Int?, stationId: List<String>): ApiUtils.Results<StationSearchDto> {
+        return ApiUtils.safeApiCall(bikeApi.getFavoriteStations(myLat, myLon, page, limit, stationId))
+    }
 }

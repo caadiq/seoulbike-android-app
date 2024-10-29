@@ -4,15 +4,22 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.beemer.seoulbike.databinding.RowStationBookmarkBinding
 import com.beemer.seoulbike.databinding.RowStationEmptyBookmarkBinding
 import com.beemer.seoulbike.model.dto.StationListDto
 import com.beemer.seoulbike.view.diff.StationListDiffUtil
 import com.beemer.seoulbike.view.utils.UnitConversion.formatDistance
 
-class BookmarkAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class BookmarkAdapter(private val listener: OnFavoriteClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    interface OnFavoriteClickListener {
+        fun setOnFavoriteClick(item: StationListDto, lottie: LottieAnimationView)
+    }
+
     private var itemList = mutableListOf<StationListDto>()
     private var onItemClickListener: ((StationListDto, Int) -> Unit)? = null
+
+    private val favoriteStationId = mutableListOf<String>()
 
     companion object {
         private const val VIEW_TYPE_ITEM = 1
@@ -58,6 +65,11 @@ class BookmarkAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             binding.txtDistance.text = item.distance?.let { formatDistance(it) }
             binding.txtQrBike.text = item.stationStatus.qrBikeCnt.toString()
             binding.txtElecBike.text = item.stationStatus.elecBikeCnt.toString()
+            if (item.stationId in favoriteStationId) binding.lottie.playAnimation() else binding.lottie.progress = 0.0f
+
+            binding.lottie.setOnClickListener {
+                listener.setOnFavoriteClick(item, binding.lottie)
+            }
         }
     }
 
@@ -76,7 +88,12 @@ class BookmarkAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         diffResult.dispatchUpdatesTo(this)
     }
 
-    fun getListSize(): Int {
-        return itemList.size
+    fun setFavoriteStation(stationId: List<String>) {
+        favoriteStationId.clear()
+        favoriteStationId.addAll(stationId)
+
+        for (position in itemList.indices) {
+            notifyItemChanged(position)
+        }
     }
 }

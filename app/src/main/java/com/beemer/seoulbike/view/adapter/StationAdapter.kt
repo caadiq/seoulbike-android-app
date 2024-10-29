@@ -4,14 +4,21 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.airbnb.lottie.LottieAnimationView
 import com.beemer.seoulbike.databinding.RowStationsBinding
 import com.beemer.seoulbike.model.dto.StationListDto
 import com.beemer.seoulbike.view.diff.StationListDiffUtil
 import com.beemer.seoulbike.view.utils.UnitConversion.formatDistance
 
-class StationAdapter : RecyclerView.Adapter<StationAdapter.ViewHolder>() {
+class StationAdapter(private val listener: OnFavoriteClickListener,) : RecyclerView.Adapter<StationAdapter.ViewHolder>() {
+    interface OnFavoriteClickListener {
+        fun setOnFavoriteClick(item: StationListDto, lottie: LottieAnimationView)
+    }
+
     private var itemList = mutableListOf<StationListDto>()
     private var onItemClickListener: ((StationListDto, Int) -> Unit)? = null
+
+    private val favoriteStationId = mutableListOf<String>()
 
     override fun getItemCount(): Int = itemList.size
 
@@ -41,6 +48,11 @@ class StationAdapter : RecyclerView.Adapter<StationAdapter.ViewHolder>() {
             binding.txtDistance.text = item.distance?.let { formatDistance(it)}
             binding.txtQrBike.text = item.stationStatus.qrBikeCnt.toString()
             binding.txtElecBike.text = item.stationStatus.elecBikeCnt.toString()
+            if (item.stationId in favoriteStationId) binding.lottie.playAnimation() else binding.lottie.progress = 0.0f
+
+            binding.lottie.setOnClickListener {
+                listener.setOnFavoriteClick(item, binding.lottie)
+            }
         }
     }
 
@@ -55,5 +67,14 @@ class StationAdapter : RecyclerView.Adapter<StationAdapter.ViewHolder>() {
         itemList.clear()
         itemList.addAll(list)
         diffResult.dispatchUpdatesTo(this)
+    }
+
+    fun setFavoriteStation(stationId: List<String>) {
+        favoriteStationId.clear()
+        favoriteStationId.addAll(stationId)
+
+        for (position in itemList.indices) {
+            notifyItemChanged(position)
+        }
     }
 }

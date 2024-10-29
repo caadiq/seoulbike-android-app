@@ -20,6 +20,9 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
     private val _stations = MutableLiveData<List<StationListDto>>()
     val stations: LiveData<List<StationListDto>> = _stations
 
+    private val _favoriteStations = MutableLiveData<List<StationListDto>>()
+    val favoriteStations: LiveData<List<StationListDto>> = _favoriteStations
+
     private val _page = MutableLiveData<PageDto>()
     val page: LiveData<PageDto> = _page
 
@@ -37,7 +40,15 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
 
     fun getNearbyStations(myLat: Double, myLon: Double, mapLat: Double, mapLon: Double, distance: Double) {
         viewModelScope.launch {
-            handleApiResponse(repository.getNearByStations(myLat, myLon, mapLat, mapLon, distance))
+            when (val result = repository.getNearByStations(myLat, myLon, mapLat, mapLon, distance)) {
+                is ApiUtils.Results.Success -> {
+                    _nearbyStations.postValue(result.data)
+                    _errorMessage.postValue(null)
+                }
+                is ApiUtils.Results.Error -> {
+                    _errorMessage.postValue(result.message)
+                }
+            }
         }
     }
 
@@ -66,14 +77,16 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
         }
     }
 
-    private fun handleApiResponse(result: ApiUtils.Results<List<StationListDto>>) {
-        when (result) {
-            is ApiUtils.Results.Success -> {
-                _nearbyStations.postValue(result.data)
-                _errorMessage.postValue(null)
-            }
-            is ApiUtils.Results.Error -> {
-                _errorMessage.postValue(result.message)
+    fun getFavoriteStations(myLat: Double, myLon: Double, page: Int?, limit: Int?, stationId: List<String>) {
+        viewModelScope.launch {
+            when (val result = repository.getFavoriteStations(myLat, myLon, page, limit, stationId)) {
+                is ApiUtils.Results.Success -> {
+                    _favoriteStations.postValue(result.data.stations)
+                    _errorMessage.postValue(null)
+                }
+                is ApiUtils.Results.Error -> {
+                    _errorMessage.postValue(result.message)
+                }
             }
         }
     }

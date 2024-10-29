@@ -8,10 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.airbnb.lottie.LottieAnimationView
 import com.beemer.seoulbike.databinding.FragmentStationBinding
+import com.beemer.seoulbike.model.dto.StationListDto
+import com.beemer.seoulbike.model.entity.FavoriteStationEntity
 import com.beemer.seoulbike.view.adapter.BookmarkAdapter
 import com.beemer.seoulbike.view.adapter.StationAdapter
 import com.beemer.seoulbike.viewmodel.BikeViewModel
+import com.beemer.seoulbike.viewmodel.FavoriteStationViewModel
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
@@ -19,16 +23,20 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 
 @AndroidEntryPoint
-class StationFragment : Fragment() {
+class StationFragment : Fragment(), BookmarkAdapter.OnFavoriteClickListener, StationAdapter.OnFavoriteClickListener {
     private var _binding : FragmentStationBinding? = null
     private val binding get() = _binding!!
 
+    private val favoriteStationViewModel by viewModels<FavoriteStationViewModel>()
     private val bikeViewModel by viewModels<BikeViewModel>()
 
-    private val bookmarkAdapter = BookmarkAdapter()
-    private val stationAdapter = StationAdapter()
+    private lateinit var  bookmarkAdapter: BookmarkAdapter
+    private lateinit var stationAdapter: StationAdapter
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private var lat = 0.0
+    private var lon = 0.0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentStationBinding.inflate(inflater, container, false)
@@ -43,7 +51,6 @@ class StationFragment : Fragment() {
 
         setupView()
         setupRecyclerView()
-        setupViewModel()
         getLocation()
     }
 
@@ -52,8 +59,26 @@ class StationFragment : Fragment() {
         _binding = null
     }
 
+
+    override fun setOnFavoriteClick(item: StationListDto, lottie: LottieAnimationView) {
+        if (lottie.progress == 1.0f) {
+            DefaultDialog(
+                title = null,
+                message = "즐겨찾기에서 삭제하시겠습니까?",
+                onConfirm = {
+                    favoriteStationViewModel.deleteFavoriteStation(item.stationId)
+                    lottie.progress = 0.0f
+                    lottie.cancelAnimation()
+                }
+            ).show(childFragmentManager, "DefaultDialog")
+        } else if (lottie.progress == 0.0f) {
+            favoriteStationViewModel.insertFavoriteStation(FavoriteStationEntity(stationId = item.stationId))
+            lottie.playAnimation()
+        }
+    }
+
     private fun setupView() {
-        binding.progressIndicator.show()
+        binding.swipeRefreshLayout.isRefreshing = true
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             getLocation()
@@ -61,13 +86,22 @@ class StationFragment : Fragment() {
 
         binding.btnRetry.setOnClickListener {
             getLocation()
-            binding.progressIndicator.show()
+            binding.swipeRefreshLayout.isRefreshing = true
         }
     }
 
     private fun setupRecyclerView() {
+        bookmarkAdapter = BookmarkAdapter(this)
+        stationAdapter = StationAdapter(this)
+
         binding.recyclerBookmark.apply {
             adapter = bookmarkAdapter
+            setHasFixedSize(true)
+            itemAnimator = null
+        }
+
+        binding.recyclerStation.apply {
+            adapter = stationAdapter
             setHasFixedSize(true)
             itemAnimator = null
         }
@@ -78,12 +112,6 @@ class StationFragment : Fragment() {
             ).show(childFragmentManager, "DetailsDialog")
         }
 
-        binding.recyclerStation.apply {
-            adapter = stationAdapter
-            setHasFixedSize(true)
-            itemAnimator = null
-        }
-
         stationAdapter.setOnItemClickListener { item, _ ->
             StationDetailsDialog(
                 item = item
@@ -92,9 +120,26 @@ class StationFragment : Fragment() {
     }
 
     private fun setupViewModel() {
+        favoriteStationViewModel.apply {
+            top5FavoriteStation.observe(viewLifecycleOwner) { stations ->
+                bikeViewModel.getFavoriteStations(lat, lon, null, null, stations.map { it.stationId })
+            }
+
+            favoriteStation.observe(viewLifecycleOwner) { stations ->
+                val favoriteStationIds = stations.map { it.stationId }
+                bookmarkAdapter.setFavoriteStation(favoriteStationIds)
+                stationAdapter.setFavoriteStation(favoriteStationIds)
+
+                binding.txtBookmarkCount.text = stations.size.toString()
+            }
+        }
+
         bikeViewModel.apply {
+            favoriteStations.observe(viewLifecycleOwner) { stations ->
+                bookmarkAdapter.setItemList(stations)
+            }
+
             nearbyStations.observe(viewLifecycleOwner) { stations ->
-                binding.progressIndicator.hide()
                 binding.swipeRefreshLayout.isRefreshing = false
                 binding.txtEmptyList.visibility = if (stations.isEmpty()) View.VISIBLE else View.GONE
 
@@ -105,7 +150,6 @@ class StationFragment : Fragment() {
 
             errorMessage.observe(viewLifecycleOwner) { message ->
                 if (message != null) {
-                    binding.progressIndicator.hide()
                     binding.swipeRefreshLayout.isRefreshing = false
                     binding.txtEmptyList.visibility = View.GONE
 
@@ -119,8 +163,10 @@ class StationFragment : Fragment() {
     @SuppressLint("MissingPermission")
     private fun getLocation() {
         fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).addOnSuccessListener {
-            val lat = it.latitude
-            val lon = it.longitude
+            setupViewModel()
+
+            lat = it.latitude
+            lon = it.longitude
 
             val geocoder = Geocoder(requireContext(), Locale.KOREA)
             val addresses = geocoder.getFromLocation(lat, lon, 1)
@@ -132,7 +178,7 @@ class StationFragment : Fragment() {
 
             binding.txtError.visibility = View.GONE
             binding.btnRetry.visibility = View.GONE
-            bikeViewModel.getNearbyStations(lat, lon, lat, lon, 700.0)
+            bikeViewModel.getNearbyStations(lat, lon, lat, lon, 500.0)
         }.addOnFailureListener { }
     }
 }

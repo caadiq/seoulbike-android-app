@@ -14,8 +14,6 @@ import javax.inject.Inject
 class FavoriteStationViewModel @Inject constructor(private val repository: FavoriteStationRepository) : ViewModel() {
     val favoriteStation = repository.getAllFavoriteStation()
 
-    val top5FavoriteStation = repository.getTop5FavoriteStation()
-
     private val _isFavoriteExists = MutableLiveData<Boolean>()
     val isFavoriteExists: LiveData<Boolean> get() = _isFavoriteExists
 

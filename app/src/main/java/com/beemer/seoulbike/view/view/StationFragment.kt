@@ -30,7 +30,7 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
     private val favoriteStationViewModel by viewModels<FavoriteStationViewModel>()
     private val bikeViewModel by viewModels<BikeViewModel>()
 
-    private lateinit var  favoriteAdapter: FavoriteAdapter
+    private lateinit var favoriteAdapter: FavoriteAdapter
     private lateinit var stationAdapter: StationAdapter
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -82,7 +82,7 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
         binding.swipeRefreshLayout.isRefreshing = true
 
         binding.swipeRefreshLayout.setOnRefreshListener {
-            favoriteStationViewModel.top5FavoriteStation.value?.let { stations ->
+            favoriteStationViewModel.favoriteStation.value?.let { stations ->
                 bikeViewModel.getFavoriteStations(lat, lon, null, null, stations.map { it.stationId })
             }
             getLocation()
@@ -125,14 +125,12 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
 
     private fun setupViewModel() {
         favoriteStationViewModel.apply {
-            top5FavoriteStation.observe(viewLifecycleOwner) { stations ->
+            favoriteStation.observe(viewLifecycleOwner) { stations ->
                 if (stations.isEmpty())
                     favoriteAdapter.setItemList(emptyList())
                 else
                     bikeViewModel.getFavoriteStations(lat, lon, null, null, stations.map { it.stationId })
-            }
 
-            favoriteStation.observe(viewLifecycleOwner) { stations ->
                 val favoriteStationIds = stations.map { it.stationId }
                 favoriteAdapter.setFavoriteStation(favoriteStationIds)
                 stationAdapter.setFavoriteStation(favoriteStationIds)
@@ -143,7 +141,7 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
 
         bikeViewModel.apply {
             favoriteStations.observe(viewLifecycleOwner) { stations ->
-                favoriteAdapter.setItemList(stations)
+                favoriteAdapter.setItemList(stations.sortedBy { it.distance })
             }
 
             nearbyStations.observe(viewLifecycleOwner) { stations ->

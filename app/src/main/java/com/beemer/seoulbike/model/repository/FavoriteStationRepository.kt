@@ -6,8 +6,6 @@ import com.beemer.seoulbike.model.entity.FavoriteStationEntity
 class FavoriteStationRepository(private val dao: FavoriteStationDao) {
     fun getAllFavoriteStation() = dao.getAllFavoriteStation()
 
-    fun getTop5FavoriteStation() = dao.getTop5FavoriteStation()
-
     suspend fun getFavoriteStationByStationId(stationId: String) = dao.getFavoriteStationByStationId(stationId)
 
     suspend fun insertFavoriteStation(favoriteStation: FavoriteStationEntity) = dao.insertFavoriteStation(favoriteStation)

@@ -19,7 +19,6 @@ import com.beemer.seoulbike.viewmodel.MainViewModel
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 
-
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -59,8 +58,8 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 setupFragment()
-                setupTabLayout()
                 setupViewModel()
+                setupTabLayout()
             } else {
                 DefaultDialog(
                     title = null,
@@ -89,8 +88,8 @@ class MainActivity : AppCompatActivity() {
     private fun checkPermissions() {
         if (ContextCompat.checkSelfPermission(this, locationPermissions[0]) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, locationPermissions[1]) == PackageManager.PERMISSION_GRANTED) {
             setupFragment()
-            setupTabLayout()
             setupViewModel()
+            setupTabLayout()
         } else {
             ActivityCompat.requestPermissions(this, locationPermissions, PERMISSION_REQUEST_CODE)
         }
@@ -100,6 +99,12 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.beginTransaction().apply {
             add(binding.containerView.id, MapFragment(), MainFragmentType.MAP.tag)
             add(binding.containerView.id, StationFragment(), MainFragmentType.STATION.tag)
+            commit()
+        }
+
+        supportFragmentManager.executePendingTransactions()
+        supportFragmentManager.beginTransaction().apply {
+            hide(supportFragmentManager.findFragmentByTag(MainFragmentType.STATION.tag)!!)
             commit()
         }
     }

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.airbnb.lottie.LottieAnimationView
+import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.FragmentStationBinding
 import com.beemer.seoulbike.model.dto.StationListDto
 import com.beemer.seoulbike.model.entity.FavoriteStationEntity
@@ -79,13 +80,15 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
     }
 
     private fun setupView() {
-        binding.swipeRefreshLayout.isRefreshing = true
-
-        binding.swipeRefreshLayout.setOnRefreshListener {
-            favoriteStationViewModel.favoriteStation.value?.let { stations ->
-                bikeViewModel.getFavoriteStations(lat, lon, null, null, stations.map { it.stationId })
+        binding.swipeRefreshLayout.apply {
+            isRefreshing = true
+            setColorSchemeResources(R.color.colorSecondary)
+            setOnRefreshListener {
+                favoriteStationViewModel.favoriteStation.value?.let { stations ->
+                    bikeViewModel.getFavoriteStations(lat, lon, null, null, stations.map { it.stationId })
+                }
+                getLocation()
             }
-            getLocation()
         }
 
         binding.btnRetry.setOnClickListener {

@@ -22,6 +22,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.geometry.LatLngBounds
+import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.LocationTrackingMode
 import com.naver.maps.map.NaverMap
@@ -173,6 +174,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                             icon = OverlayImage.fromView(markerBinding.root)
                             anchor = PointF(0.2f, 1.0f)
                             onClickListener = Overlay.OnClickListener {
+                                val cameraUpdate = CameraUpdate.scrollTo(LatLng(lat, lon)).animate(CameraAnimation.Easing)
+                                naverMap.moveCamera(cameraUpdate)
+
                                 StationStatusBottomsheetDialog(
                                     item = station
                                 ).show(childFragmentManager, "StatusBottomsheetDialog")

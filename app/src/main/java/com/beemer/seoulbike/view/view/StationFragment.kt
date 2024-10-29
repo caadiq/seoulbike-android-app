@@ -35,6 +35,7 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
 
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
+    private var isViewModelInitialized = false
     private var lat: Double? = null
     private var lon: Double? = null
 
@@ -51,7 +52,6 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
 
         setupView()
         setupRecyclerView()
-        setupViewModel()
         getLocation()
     }
 
@@ -170,6 +170,11 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
     @SuppressLint("MissingPermission")
     private fun getLocation() {
         fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).addOnSuccessListener {
+            if (!isViewModelInitialized) {
+                setupViewModel()
+                isViewModelInitialized = true
+            }
+
             lat = it.latitude
             lon = it.longitude
 

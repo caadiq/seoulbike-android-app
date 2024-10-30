@@ -10,7 +10,7 @@ import com.beemer.seoulbike.model.dto.StationListDto
 import com.beemer.seoulbike.view.diff.StationListDiffUtil
 import com.beemer.seoulbike.view.utils.UnitConversion.formatDistance
 
-class StationAdapter(private val listener: OnFavoriteClickListener,) : RecyclerView.Adapter<StationAdapter.ViewHolder>() {
+class StationAdapter(private val listener: OnFavoriteClickListener) : RecyclerView.Adapter<StationAdapter.ViewHolder>() {
     interface OnFavoriteClickListener {
         fun setOnFavoriteClick(item: StationListDto, lottie: LottieAnimationView)
     }

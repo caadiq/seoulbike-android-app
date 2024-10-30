@@ -4,9 +4,11 @@ import android.app.Application
 import android.content.Context
 import androidx.room.Room
 import com.beemer.seoulbike.model.dao.FavoriteStationDao
+import com.beemer.seoulbike.model.dao.SearchHistoryDao
 import com.beemer.seoulbike.model.database.Database
 import com.beemer.seoulbike.model.repository.BikeRepository
 import com.beemer.seoulbike.model.repository.FavoriteStationRepository
+import com.beemer.seoulbike.model.repository.SearchHistoryRepository
 import com.beemer.seoulbike.model.service.RetrofitService
 import dagger.Module
 import dagger.Provides
@@ -37,7 +39,16 @@ class AppModule {
 
     @Provides
     @Singleton
+    fun provideSearchHistoryDao(database: Database): SearchHistoryDao = database.searchHistoryDao()
+
+    @Provides
+    @Singleton
     fun provideFavoriteStationRepository(dao: FavoriteStationDao): FavoriteStationRepository = FavoriteStationRepository(dao)
+
+    @Provides
+    @Singleton
+    fun provideSearchHistoryRepository(dao: SearchHistoryDao): SearchHistoryRepository = SearchHistoryRepository(dao)
+
 
     @Provides
     @Singleton

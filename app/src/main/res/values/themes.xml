@@ -13,6 +13,7 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="elevationOverlayEnabled">false</item>
         <item name="android:statusBarColor">@color/white</item>
+        <item name="android:textColorHighlight">@color/colorPrimary</item>
 
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialogTheme</item>
     </style>

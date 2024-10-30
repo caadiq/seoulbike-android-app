@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.beemer.seoulbike.model.dto.PageDto
 import com.beemer.seoulbike.model.dto.StationListDto
+import com.beemer.seoulbike.model.dto.StationPopularDto
 import com.beemer.seoulbike.model.repository.BikeRepository
 import com.beemer.seoulbike.model.utils.ApiUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -22,6 +23,9 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
 
     private val _favoriteStations = MutableLiveData<List<StationListDto>>()
     val favoriteStations: LiveData<List<StationListDto>> = _favoriteStations
+
+    private val _popularStations = MutableLiveData<List<StationPopularDto>>()
+    val popularStations: LiveData<List<StationPopularDto>> = _popularStations
 
     private val _page = MutableLiveData<PageDto>()
     val page: LiveData<PageDto> = _page
@@ -77,11 +81,25 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
         }
     }
 
-    fun getFavoriteStations(myLat: Double?, myLon: Double?, page: Int?, limit: Int?, stationId: List<String>) {
+    fun getFavoriteStations(myLat: Double, myLon: Double, page: Int?, limit: Int?, stationId: List<String>) {
         viewModelScope.launch {
             when (val result = repository.getFavoriteStations(myLat, myLon, page, limit, stationId)) {
                 is ApiUtils.Results.Success -> {
                     _favoriteStations.postValue(result.data.stations)
+                    _errorMessage.postValue(null)
+                }
+                is ApiUtils.Results.Error -> {
+                    _errorMessage.postValue(result.message)
+                }
+            }
+        }
+    }
+
+    fun getPopularStations() {
+        viewModelScope.launch {
+            when (val result = repository.getPopularStations()) {
+                is ApiUtils.Results.Success -> {
+                    _popularStations.postValue(result.data)
                     _errorMessage.postValue(null)
                 }
                 is ApiUtils.Results.Error -> {

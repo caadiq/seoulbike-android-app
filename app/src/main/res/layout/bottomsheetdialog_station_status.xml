@@ -68,7 +68,6 @@
         android:ellipsize="end"
         android:fontFamily="@font/nanum_square_neo_bold"
         android:maxLines="1"
-        android:text="4924. 논현동가구거리"
         android:textColor="@color/colorSecondary"
         android:textSize="16dp"
         app:layout_constraintEnd_toEndOf="parent"

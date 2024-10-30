@@ -60,6 +60,7 @@ class MainActivity : AppCompatActivity() {
                 setupFragment()
                 setupViewModel()
                 setupTabLayout()
+                setupView()
             } else {
                 DefaultDialog(
                     title = null,
@@ -90,6 +91,7 @@ class MainActivity : AppCompatActivity() {
             setupFragment()
             setupViewModel()
             setupTabLayout()
+            setupView()
         } else {
             ActivityCompat.requestPermissions(this, locationPermissions, PERMISSION_REQUEST_CODE)
         }
@@ -136,6 +138,12 @@ class MainActivity : AppCompatActivity() {
             }.commit()
 
             binding.tabLayout.getTabAt(fragmentType.ordinal)?.select()
+        }
+    }
+
+    private fun setupView() {
+        binding.btnSearch.setOnClickListener {
+            startActivity(Intent(this, SearchActivity::class.java))
         }
     }
 }

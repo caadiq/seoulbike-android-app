@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.airbnb.lottie.LottieAnimationView
@@ -37,8 +38,8 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private var isViewModelInitialized = false
-    private var lat: Double? = null
-    private var lon: Double? = null
+    private var lat: Double = 0.0
+    private var lon: Double = 0.0
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentStationBinding.inflate(inflater, container, false)
@@ -85,7 +86,10 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
             setColorSchemeResources(R.color.colorSecondary)
             setOnRefreshListener {
                 favoriteStationViewModel.favoriteStation.value?.let { stations ->
-                    bikeViewModel.getFavoriteStations(lat, lon, null, null, stations.map { it.stationId })
+                    if (lat != 0.0 && lon != 0.0)
+                        bikeViewModel.getFavoriteStations(lat, lon, null, null, stations.map { it.stationId })
+                    else
+                        Toast.makeText(requireContext(), "잠시 후 다시 시도해주세요.", Toast.LENGTH_SHORT).show()
                 }
                 getLocation()
             }
@@ -182,7 +186,7 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
             lon = it.longitude
 
             val geocoder = Geocoder(requireContext(), Locale.KOREA)
-            val addresses = geocoder.getFromLocation(lat!!, lon!!, 1)
+            val addresses = geocoder.getFromLocation(lat, lon, 1)
             val fullAddress = addresses?.get(0)?.getAddressLine(0) ?: "위치를 찾을 수 없습니다."
             val addressParts = fullAddress.split(" ")
             val shortAddress = if (addressParts.size >= 4) "${addressParts[2]} ${addressParts[3]}" else ""
@@ -191,7 +195,7 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
 
             binding.txtError.visibility = View.GONE
             binding.btnRetry.visibility = View.GONE
-            bikeViewModel.getNearbyStations(lat!!, lon!!, lat!!, lon!!, 500.0)
+            bikeViewModel.getNearbyStations(lat, lon, lat, lon, 500.0)
         }.addOnFailureListener { }
     }
 }

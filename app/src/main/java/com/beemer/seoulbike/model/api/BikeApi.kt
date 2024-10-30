@@ -1,6 +1,7 @@
 package com.beemer.seoulbike.model.api
 
 import com.beemer.seoulbike.model.dto.StationListDto
+import com.beemer.seoulbike.model.dto.StationPopularDto
 import com.beemer.seoulbike.model.dto.StationSearchDto
 import retrofit2.Call
 import retrofit2.http.Body
@@ -30,10 +31,13 @@ interface BikeApi {
 
     @POST("/api/seoulbike/stations")
     fun getFavoriteStations(
-        @Query("my_lat") myLat: Double?,
-        @Query("my_lon") myLon: Double?,
+        @Query("my_lat") myLat: Double,
+        @Query("my_lon") myLon: Double,
         @Query("page") page: Int?,
         @Query("limit") limit: Int?,
         @Body stationId: List<String>
     ): Call<StationSearchDto>
+
+    @GET("/api/seoulbike/stations/popular")
+    fun getPopularStations(): Call<List<StationPopularDto>>
 }

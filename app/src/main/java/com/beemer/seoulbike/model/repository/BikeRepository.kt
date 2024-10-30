@@ -2,6 +2,7 @@ package com.beemer.seoulbike.model.repository
 
 import com.beemer.seoulbike.model.api.BikeApi
 import com.beemer.seoulbike.model.dto.StationListDto
+import com.beemer.seoulbike.model.dto.StationPopularAddDto
 import com.beemer.seoulbike.model.dto.StationPopularDto
 import com.beemer.seoulbike.model.dto.StationSearchDto
 import com.beemer.seoulbike.model.utils.ApiUtils
@@ -25,5 +26,9 @@ class BikeRepository @Inject constructor(retrofit: Retrofit) {
 
     suspend fun getPopularStations(): ApiUtils.Results<List<StationPopularDto>> {
         return ApiUtils.safeApiCall(bikeApi.getPopularStations())
+    }
+
+    suspend fun addPopularStation(dto: StationPopularAddDto): ApiUtils.Results<Unit> {
+        return ApiUtils.safeApiCall(bikeApi.addPopularStation(dto))
     }
 }

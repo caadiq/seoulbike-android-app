@@ -19,6 +19,9 @@ class SearchViewModel @Inject constructor() : ViewModel() {
     private val _query = MutableLiveData<String?>(null)
     val query: LiveData<String?> = _query
 
+    private val _location = MutableLiveData<Pair<Double, Double>>()
+    val location: LiveData<Pair<Double, Double>> = _location
+
     fun setCurrentFragment(item: Int): Boolean {
         val pageType = getPageType(item)
         changeCurrentFragmentType(pageType)
@@ -43,5 +46,9 @@ class SearchViewModel @Inject constructor() : ViewModel() {
 
     fun updateQuery(newQuery: String?) {
         _query.value = newQuery
+    }
+
+    fun setMyLocation(newLocation: Pair<Double, Double>) {
+        _location.value = newLocation
     }
 }

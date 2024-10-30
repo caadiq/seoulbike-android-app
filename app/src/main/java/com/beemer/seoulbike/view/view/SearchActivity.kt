@@ -9,17 +9,24 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.beemer.seoulbike.databinding.ActivitySearchBinding
+import com.beemer.seoulbike.viewmodel.BikeViewModel
 import com.beemer.seoulbike.viewmodel.SearchFragmentType
 import com.beemer.seoulbike.viewmodel.SearchHistoryViewModel
 import com.beemer.seoulbike.viewmodel.SearchViewModel
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class SearchActivity : AppCompatActivity() {
     private val binding by lazy { ActivitySearchBinding.inflate(layoutInflater) }
 
+    private val bikeViewModel by viewModels<BikeViewModel>()
     private val searchViewModel by viewModels<SearchViewModel>()
     private val searchHistoryViewModel by viewModels<SearchHistoryViewModel>()
+
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     private val imm by lazy { getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager }
 
@@ -45,6 +52,7 @@ class SearchActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         setupView()
         setupFragment()
@@ -116,8 +124,21 @@ class SearchActivity : AppCompatActivity() {
                         setText(query)
                     }
                     searchViewModel.setCurrentFragment(1)
+                    getLocation(query)
                 }
             }
         }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getLocation(query: String) {
+        fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).addOnSuccessListener {
+            val lat = it.latitude
+            val lon = it.longitude
+
+            searchViewModel.setMyLocation(Pair(lat, lon))
+            bikeViewModel.getStations(lat, lon, 0, 20, query, true)
+
+        }.addOnFailureListener { }
     }
 }

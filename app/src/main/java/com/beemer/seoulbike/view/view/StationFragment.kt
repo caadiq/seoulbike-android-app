@@ -40,6 +40,7 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
     private var isViewModelInitialized = false
     private var lat: Double = 0.0
     private var lon: Double = 0.0
+    private var favoriteStationIds = emptyList<String>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentStationBinding.inflate(inflater, container, false)
@@ -61,7 +62,6 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
         super.onDestroyView()
         _binding = null
     }
-
 
     override fun setOnFavoriteClick(item: StationListDto, lottie: LottieAnimationView) {
         if (lottie.progress == 1.0f) {
@@ -133,14 +133,12 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
     private fun setupViewModel() {
         favoriteStationViewModel.apply {
             favoriteStation.observe(viewLifecycleOwner) { stations ->
-                if (stations.isEmpty())
+                if (stations.isEmpty()) {
                     favoriteAdapter.setItemList(emptyList())
-                else
+                } else {
                     bikeViewModel.getFavoriteStations(lat, lon, null, null, stations.map { it.stationId })
-
-                val favoriteStationIds = stations.map { it.stationId }
-                favoriteAdapter.setFavoriteStation(favoriteStationIds)
-                stationAdapter.setFavoriteStation(favoriteStationIds)
+}
+                favoriteStationIds = stations.map { it.stationId }
 
                 binding.txtFavoriteCount.text = stations.size.toString()
             }
@@ -148,7 +146,10 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
 
         bikeViewModel.apply {
             favoriteStations.observe(viewLifecycleOwner) { stations ->
-                favoriteAdapter.setItemList(stations.sortedBy { it.distance })
+                val updatedList = stations.map { station ->
+                    station.copy(isFavorite = station.stationId in favoriteStationIds)
+                }
+                favoriteAdapter.setItemList(updatedList.sortedBy { it.distance })
             }
 
             nearbyStations.observe(viewLifecycleOwner) { stations ->
@@ -156,9 +157,10 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
                 binding.layoutBody.visibility = View.VISIBLE
                 binding.txtEmptyList.visibility = if (stations.isEmpty()) View.VISIBLE else View.GONE
 
-                stationAdapter.setItemList(
-                    stations.filter { it.stationStatus.qrBikeCnt != null }.sortedBy { it.distance }
-                )
+                val updatedList = stations.map { station ->
+                    station.copy(isFavorite = station.stationId in favoriteStationIds)
+                }
+                stationAdapter.setItemList(updatedList.filter { it.stationStatus.qrBikeCnt != null }.sortedBy { it.distance })
             }
 
             errorMessage.observe(viewLifecycleOwner) { message ->

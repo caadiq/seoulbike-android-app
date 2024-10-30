@@ -7,4 +7,5 @@ data class StationListDto(
     val distance: Double?,
     val stationDetails: StationDetailsDto,
     val stationStatus: StationStatusDto,
+    var isFavorite: Boolean = false
 )

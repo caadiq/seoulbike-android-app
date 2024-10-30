@@ -31,7 +31,10 @@ import com.naver.maps.map.util.FusedLocationSource
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class StationDetailsDialog(private val item: StationListDto) : DialogFragment(), OnMapReadyCallback {
+class StationDetailsDialog(
+    private val item: StationListDto,
+    private val onClose: ((String, Boolean) -> Unit)? = null
+) : DialogFragment(), OnMapReadyCallback {
     private var _binding: DialogStationDetailsBinding? = null
     private val binding get() = _binding!!
 
@@ -42,6 +45,8 @@ class StationDetailsDialog(private val item: StationListDto) : DialogFragment(),
     private lateinit var naverMap: NaverMap
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
+
+    private var isFavorite = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = DialogStationDetailsBinding.inflate(inflater, container, false)
@@ -64,6 +69,7 @@ class StationDetailsDialog(private val item: StationListDto) : DialogFragment(),
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        onClose?.invoke(item.stationId, isFavorite)
     }
 
     override fun onMapReady(naverMap: NaverMap) {
@@ -148,11 +154,13 @@ class StationDetailsDialog(private val item: StationListDto) : DialogFragment(),
                             favoriteStationViewModel.deleteFavoriteStation(item.stationId)
                             progress = 0.0f
                             cancelAnimation()
+                            isFavorite = false
                         }
                     ).show(childFragmentManager, "DefaultDialog")
                 } else if (binding.lottie.progress == 0.0f) {
                     favoriteStationViewModel.insertFavoriteStation(FavoriteStationEntity(stationId = item.stationId))
                     playAnimation()
+                    isFavorite = true
                 }
             }
         }
@@ -163,6 +171,7 @@ class StationDetailsDialog(private val item: StationListDto) : DialogFragment(),
             checkFavoriteExists(item.stationId)
 
             isFavoriteExists.observe(viewLifecycleOwner) { exists ->
+                isFavorite = exists
                 if (exists)
                     binding.lottie.playAnimation()
             }

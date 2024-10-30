@@ -18,8 +18,6 @@ class StationAdapter(private val listener: OnFavoriteClickListener) : RecyclerVi
     private var itemList = mutableListOf<StationListDto>()
     private var onItemClickListener: ((StationListDto, Int) -> Unit)? = null
 
-    private val favoriteStationId = mutableListOf<String>()
-
     override fun getItemCount(): Int = itemList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -49,11 +47,12 @@ class StationAdapter(private val listener: OnFavoriteClickListener) : RecyclerVi
             binding.txtQrBike.text = item.stationStatus.qrBikeCnt.toString()
             binding.txtElecBike.text = item.stationStatus.elecBikeCnt.toString()
 
-            if (item.stationId in favoriteStationId) {
+            if (item.isFavorite) {
                 if (binding.lottie.progress == 0.0f)
                     binding.lottie.playAnimation()
             } else {
                 binding.lottie.progress = 0.0f
+                binding.lottie.cancelAnimation()
             }
 
             binding.lottie.setOnClickListener {
@@ -73,14 +72,5 @@ class StationAdapter(private val listener: OnFavoriteClickListener) : RecyclerVi
         itemList.clear()
         itemList.addAll(list)
         diffResult.dispatchUpdatesTo(this)
-    }
-
-    fun setFavoriteStation(stationId: List<String>) {
-        favoriteStationId.clear()
-        favoriteStationId.addAll(stationId)
-
-        for (position in itemList.indices) {
-            notifyItemChanged(position)
-        }
     }
 }

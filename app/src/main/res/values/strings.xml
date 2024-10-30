@@ -22,6 +22,9 @@
     <string name="str_search_recent">최근 검색</string>
     <string name="str_search_popular">인기 대여소</string>
 
+    <!--fragment_search_2.xml-->
+    <string name="str_search_no_search">검색 결과가 없습니다.</string>
+
     <!--row_station_empty_favorite.xml-->
     <string name="str_station_no_favorite">즐겨찾는 대여소가 없습니다.</string>
 

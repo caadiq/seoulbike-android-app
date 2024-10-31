@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.beemer.seoulbike.R
@@ -166,8 +167,16 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     val elecBikeCnt = station.stationStatus.elecBikeCnt
 
                     if (lat != null && lon != null && qrBikeCnt != null && elecBikeCnt != null) {
+                        val totalBikeCnt = qrBikeCnt + elecBikeCnt
+
                         val markerBinding = MarkerCustomBinding.inflate(LayoutInflater.from(context))
-                        markerBinding.txtCount.text = "${qrBikeCnt + elecBikeCnt}대"
+                        markerBinding.txtCount.text = "${totalBikeCnt}대"
+
+                        markerBinding.layoutParent.background = when (totalBikeCnt) {
+                            0 -> ResourcesCompat.getDrawable(resources, R.drawable.chat_bubble_red, null)
+                            in 1..2 -> ResourcesCompat.getDrawable(resources, R.drawable.chat_bubble_yellow, null)
+                            else -> ResourcesCompat.getDrawable(resources, R.drawable.chat_bubble_primary, null)
+                        }
 
                         val marker = Marker().apply {
                             position = LatLng(lat, lon)

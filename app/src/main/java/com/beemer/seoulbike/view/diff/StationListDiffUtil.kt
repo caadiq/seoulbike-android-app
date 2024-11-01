@@ -1,9 +1,9 @@
 package com.beemer.seoulbike.view.diff
 
 import androidx.recyclerview.widget.DiffUtil
-import com.beemer.seoulbike.model.dto.StationListDto
+import com.beemer.seoulbike.model.dto.StationDto
 
-class StationListDiffUtil(private val oldList: List<StationListDto>, private val newList: List<StationListDto>) : DiffUtil.Callback() {
+class StationListDiffUtil(private val oldList: List<StationDto>, private val newList: List<StationDto>) : DiffUtil.Callback() {
     override fun getOldListSize(): Int {
         return oldList.size
     }

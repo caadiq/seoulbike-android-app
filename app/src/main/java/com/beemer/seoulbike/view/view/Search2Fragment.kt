@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.beemer.seoulbike.databinding.FragmentSearch2Binding
-import com.beemer.seoulbike.model.dto.StationListDto
+import com.beemer.seoulbike.model.dto.StationDto
 import com.beemer.seoulbike.model.entity.FavoriteStationEntity
 import com.beemer.seoulbike.view.adapter.StationSearchAdapter
 import com.beemer.seoulbike.viewmodel.BikeViewModel
@@ -52,7 +52,7 @@ class Search2Fragment : Fragment(), StationSearchAdapter.OnFavoriteClickListener
         _binding = null
     }
 
-    override fun setOnFavoriteClick(item: StationListDto, lottie: LottieAnimationView) {
+    override fun setOnFavoriteClick(item: StationDto, lottie: LottieAnimationView) {
         if (lottie.progress == 1.0f) {
             DefaultDialog(
                 title = null,

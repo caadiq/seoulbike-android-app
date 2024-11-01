@@ -12,7 +12,7 @@ import androidx.fragment.app.viewModels
 import com.airbnb.lottie.LottieAnimationView
 import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.FragmentStationBinding
-import com.beemer.seoulbike.model.dto.StationListDto
+import com.beemer.seoulbike.model.dto.StationDto
 import com.beemer.seoulbike.model.entity.FavoriteStationEntity
 import com.beemer.seoulbike.view.adapter.FavoriteAdapter
 import com.beemer.seoulbike.view.adapter.StationAdapter
@@ -63,7 +63,7 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
         _binding = null
     }
 
-    override fun setOnFavoriteClick(item: StationListDto, lottie: LottieAnimationView) {
+    override fun setOnFavoriteClick(item: StationDto, lottie: LottieAnimationView) {
         if (lottie.progress == 1.0f) {
             DefaultDialog(
                 title = null,

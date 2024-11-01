@@ -7,17 +7,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.beemer.seoulbike.databinding.RowStationEmptyFavoriteBinding
 import com.beemer.seoulbike.databinding.RowStationFavoriteBinding
-import com.beemer.seoulbike.model.dto.StationListDto
+import com.beemer.seoulbike.model.dto.StationDto
 import com.beemer.seoulbike.view.diff.StationListDiffUtil
 import com.beemer.seoulbike.view.utils.UnitConversion.formatDistance
 
 class FavoriteAdapter(private val listener: OnFavoriteClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     interface OnFavoriteClickListener {
-        fun setOnFavoriteClick(item: StationListDto, lottie: LottieAnimationView)
+        fun setOnFavoriteClick(item: StationDto, lottie: LottieAnimationView)
     }
 
-    private var itemList = mutableListOf<StationListDto>()
-    private var onItemClickListener: ((StationListDto, Int) -> Unit)? = null
+    private var itemList = mutableListOf<StationDto>()
+    private var onItemClickListener: ((StationDto, Int) -> Unit)? = null
 
     companion object {
         private const val VIEW_TYPE_ITEM = 1
@@ -57,7 +57,7 @@ class FavoriteAdapter(private val listener: OnFavoriteClickListener) : RecyclerV
             }
         }
 
-        fun bind(item: StationListDto) {
+        fun bind(item: StationDto) {
             binding.txtNo.text = item.stationNo.replace("^0+".toRegex(), "")
             binding.txtName.text = item.stationNm
             binding.txtDistance.text = item.distance?.let { formatDistance(it) }
@@ -80,11 +80,11 @@ class FavoriteAdapter(private val listener: OnFavoriteClickListener) : RecyclerV
 
     inner class EmptyViewHolder(binding: RowStationEmptyFavoriteBinding) : RecyclerView.ViewHolder(binding.root)
 
-    fun setOnItemClickListener(listener: (StationListDto, Int) -> Unit) {
+    fun setOnItemClickListener(listener: (StationDto, Int) -> Unit) {
         onItemClickListener = listener
     }
 
-    fun setItemList(list: List<StationListDto>) {
+    fun setItemList(list: List<StationDto>) {
         val diffCallBack = StationListDiffUtil(itemList, list)
         val diffResult = DiffUtil.calculateDiff(diffCallBack)
 

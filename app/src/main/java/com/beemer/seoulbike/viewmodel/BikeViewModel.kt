@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.beemer.seoulbike.model.dto.PageDto
-import com.beemer.seoulbike.model.dto.StationListDto
+import com.beemer.seoulbike.model.dto.StationDto
 import com.beemer.seoulbike.model.dto.StationPopularDto
 import com.beemer.seoulbike.model.repository.BikeRepository
 import com.beemer.seoulbike.model.utils.ApiUtils
@@ -15,14 +15,17 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BikeViewModel @Inject constructor(private val repository: BikeRepository) : ViewModel() {
-    private val _nearbyStations = MutableLiveData<List<StationListDto>>()
-    val nearbyStations: LiveData<List<StationListDto>> = _nearbyStations
+    private val _nearbyStations = MutableLiveData<List<StationDto>>()
+    val nearbyStations: LiveData<List<StationDto>> = _nearbyStations
 
-    private val _stations = MutableLiveData<List<StationListDto>>()
-    val stations: LiveData<List<StationListDto>> = _stations
+    private val _station = MutableLiveData<StationDto>()
+    val station: LiveData<StationDto> = _station
 
-    private val _favoriteStations = MutableLiveData<List<StationListDto>>()
-    val favoriteStations: LiveData<List<StationListDto>> = _favoriteStations
+    private val _stations = MutableLiveData<List<StationDto>>()
+    val stations: LiveData<List<StationDto>> = _stations
+
+    private val _favoriteStations = MutableLiveData<List<StationDto>>()
+    val favoriteStations: LiveData<List<StationDto>> = _favoriteStations
 
     private val _popularStations = MutableLiveData<List<StationPopularDto>>()
     val popularStations: LiveData<List<StationPopularDto>> = _popularStations
@@ -49,6 +52,20 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
             when (val result = repository.getNearByStations(myLat, myLon, mapLat, mapLon, distance)) {
                 is ApiUtils.Results.Success -> {
                     _nearbyStations.postValue(result.data)
+                    _errorMessage.postValue(null)
+                }
+                is ApiUtils.Results.Error -> {
+                    _errorMessage.postValue(result.message)
+                }
+            }
+        }
+    }
+
+    fun getStation(myLat: Double, myLon: Double, stationId: String) {
+        viewModelScope.launch {
+            when (val result = repository.getStation(myLat, myLon, stationId)) {
+                is ApiUtils.Results.Success -> {
+                    _station.postValue(result.data)
                     _errorMessage.postValue(null)
                 }
                 is ApiUtils.Results.Error -> {

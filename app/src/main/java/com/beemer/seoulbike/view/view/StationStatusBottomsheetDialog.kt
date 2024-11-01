@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.beemer.seoulbike.databinding.BottomsheetdialogStationStatusBinding
-import com.beemer.seoulbike.model.dto.StationListDto
+import com.beemer.seoulbike.model.dto.StationDto
 import com.beemer.seoulbike.model.entity.FavoriteStationEntity
 import com.beemer.seoulbike.view.utils.DateTimeConverter.convertDateTime
 import com.beemer.seoulbike.view.utils.UnitConversion.formatDistance
@@ -16,7 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 
 @AndroidEntryPoint
-class StationStatusBottomsheetDialog(private val item: StationListDto) : BottomSheetDialogFragment() {
+class StationStatusBottomsheetDialog(private val item: StationDto) : BottomSheetDialogFragment() {
     private var _binding: BottomsheetdialogStationStatusBinding? = null
     private val binding get() = _binding!!
 

@@ -7,17 +7,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.beemer.seoulbike.databinding.RowProgressBinding
 import com.beemer.seoulbike.databinding.RowStationSearchBinding
-import com.beemer.seoulbike.model.dto.StationListDto
+import com.beemer.seoulbike.model.dto.StationDto
 import com.beemer.seoulbike.view.diff.StationListDiffUtil
 import com.beemer.seoulbike.view.utils.UnitConversion.formatDistance
 
 class StationSearchAdapter(private val listener: OnFavoriteClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
     interface OnFavoriteClickListener {
-        fun setOnFavoriteClick(item: StationListDto, lottie: LottieAnimationView)
+        fun setOnFavoriteClick(item: StationDto, lottie: LottieAnimationView)
     }
 
-    private var itemList = mutableListOf<StationListDto>()
-    private var onItemClickListener: ((StationListDto, Int) -> Unit)? = null
+    private var itemList = mutableListOf<StationDto>()
+    private var onItemClickListener: ((StationDto, Int) -> Unit)? = null
     private var isLoading = false
 
     companion object {
@@ -55,7 +55,7 @@ class StationSearchAdapter(private val listener: OnFavoriteClickListener) : Recy
             }
         }
 
-        fun bind(item: StationListDto) {
+        fun bind(item: StationDto) {
             binding.txtStationNo.text = item.stationNo.replace("^0+".toRegex(), "")
             binding.txtStationNm.text = item.stationNm
             binding.txtAddress.text = item.stationDetails.addr1
@@ -79,11 +79,11 @@ class StationSearchAdapter(private val listener: OnFavoriteClickListener) : Recy
 
     inner class LoadingViewHolder(binding: RowProgressBinding) : RecyclerView.ViewHolder(binding.root)
 
-    fun setOnItemClickListener(listener: (StationListDto, Int) -> Unit) {
+    fun setOnItemClickListener(listener: (StationDto, Int) -> Unit) {
         onItemClickListener = listener
     }
 
-    fun setItemList(list: List<StationListDto>) {
+    fun setItemList(list: List<StationDto>) {
         val diffCallBack = StationListDiffUtil(itemList, list)
         val diffResult = DiffUtil.calculateDiff(diffCallBack)
 
@@ -92,7 +92,7 @@ class StationSearchAdapter(private val listener: OnFavoriteClickListener) : Recy
         diffResult.dispatchUpdatesTo(this)
     }
 
-    fun getItemList(): List<StationListDto> {
+    fun getItemList(): List<StationDto> {
         return itemList
     }
 

@@ -1,6 +1,6 @@
 package com.beemer.seoulbike.model.api
 
-import com.beemer.seoulbike.model.dto.StationListDto
+import com.beemer.seoulbike.model.dto.StationDto
 import com.beemer.seoulbike.model.dto.StationPopularDto
 import com.beemer.seoulbike.model.dto.StationSearchDto
 import retrofit2.Call
@@ -18,7 +18,14 @@ interface BikeApi {
         @Query("map_lat") mapLat: Double,
         @Query("map_lon") mapLon: Double,
         @Query("distance") distance: Double
-    ): Call<List<StationListDto>>
+    ): Call<List<StationDto>>
+
+    @GET("/api/seoulbike/station")
+    fun getStation(
+        @Query("my_lat") myLat: Double,
+        @Query("my_lon") myLon: Double,
+        @Query("station_id") stationId: String,
+    ): Call<StationDto>
 
     @GET("/api/seoulbike/stations")
     fun getStations(

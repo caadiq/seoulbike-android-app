@@ -12,7 +12,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.DialogStationDetailsBinding
-import com.beemer.seoulbike.model.dto.StationListDto
+import com.beemer.seoulbike.model.dto.StationDto
 import com.beemer.seoulbike.model.entity.FavoriteStationEntity
 import com.beemer.seoulbike.view.utils.UnitConversion.formatDistance
 import com.beemer.seoulbike.viewmodel.FavoriteStationViewModel
@@ -32,7 +32,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class StationDetailsDialog(
-    private val item: StationListDto,
+    private val item: StationDto,
     private val onClose: ((String, Boolean) -> Unit)? = null
 ) : DialogFragment(), OnMapReadyCallback {
     private var _binding: DialogStationDetailsBinding? = null

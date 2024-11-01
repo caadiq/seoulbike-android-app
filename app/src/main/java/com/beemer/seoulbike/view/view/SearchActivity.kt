@@ -57,6 +57,7 @@ class SearchActivity : AppCompatActivity() {
         setupView()
         setupFragment()
         setupViewModel()
+        getLocation()
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -131,13 +132,15 @@ class SearchActivity : AppCompatActivity() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun getLocation(query: String) {
+    private fun getLocation(query: String? = null) {
         fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).addOnSuccessListener {
             val lat = it.latitude
             val lon = it.longitude
 
             searchViewModel.setMyLocation(Pair(lat, lon))
-            bikeViewModel.getStations(lat, lon, 0, 20, query, true)
+            query?.let {
+                bikeViewModel.getStations(lat, lon, 0, 20, query, true)
+            }
 
         }.addOnFailureListener { }
     }

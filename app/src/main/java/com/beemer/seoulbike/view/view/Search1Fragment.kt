@@ -86,6 +86,11 @@ class Search1Fragment : Fragment(), SearchHistoryAdapter.OnDeleteClickListener {
             layoutManager = gridLayoutManager
             adapter = popularAdapter
         }
+
+        popularAdapter.setOnItemClickListener { item, _ ->
+            val (lat, lon) = searchViewModel.location.value ?: return@setOnItemClickListener
+            bikeViewModel.getStation(lat, lon, item.stationId)
+        }
     }
 
     private fun setupViewModel() {
@@ -119,6 +124,12 @@ class Search1Fragment : Fragment(), SearchHistoryAdapter.OnDeleteClickListener {
                 }
 
                 popularAdapter.setItemList(rearrangedList)
+            }
+
+            station.observe(viewLifecycleOwner) { station ->
+                StationDetailsDialog(
+                    item = station
+                ).show(childFragmentManager, "DetailsDialog")
             }
         }
     }

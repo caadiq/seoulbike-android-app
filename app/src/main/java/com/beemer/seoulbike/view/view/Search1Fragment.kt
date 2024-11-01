@@ -112,13 +112,12 @@ class Search1Fragment : Fragment(), SearchHistoryAdapter.OnDeleteClickListener {
                 val rearrangedList = mutableListOf<StationPopularDto>()
                 val halfSize = (stations.size + 1) / 2
                 for (i in 0 until halfSize) {
-                    stations[i].rank = i + 1
                     rearrangedList.add(stations[i])
                     if (i + halfSize < stations.size) {
-                        stations[i + halfSize].rank = i + halfSize + 1
                         rearrangedList.add(stations[i + halfSize])
                     }
                 }
+
                 popularAdapter.setItemList(rearrangedList)
             }
         }

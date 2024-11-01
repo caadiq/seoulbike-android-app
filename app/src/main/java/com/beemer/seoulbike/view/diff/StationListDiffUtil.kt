@@ -13,7 +13,7 @@ class StationListDiffUtil(private val oldList: List<StationListDto>, private val
     }
 
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition].stationNo == newList[newItemPosition].stationNo
+        return oldList[oldItemPosition].stationId == newList[newItemPosition].stationId
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {

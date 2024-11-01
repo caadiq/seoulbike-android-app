@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.beemer.seoulbike.model.dto.PageDto
 import com.beemer.seoulbike.model.dto.StationListDto
-import com.beemer.seoulbike.model.dto.StationPopularAddDto
 import com.beemer.seoulbike.model.dto.StationPopularDto
 import com.beemer.seoulbike.model.repository.BikeRepository
 import com.beemer.seoulbike.model.utils.ApiUtils
@@ -29,7 +28,6 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
     val popularStations: LiveData<List<StationPopularDto>> = _popularStations
 
     private val _addPopularStation = MutableLiveData<Unit>()
-    val addPopularStation: LiveData<Unit> = _addPopularStation
 
     private val _page = MutableLiveData<PageDto>()
     val page: LiveData<PageDto> = _page
@@ -113,9 +111,9 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
         }
     }
 
-    fun addPopularStation(dto: StationPopularAddDto) {
+    fun addPopularStation(stationId: String) {
         viewModelScope.launch {
-            when (val result = repository.addPopularStation(dto)) {
+            when (val result = repository.addPopularStation(stationId)) {
                 is ApiUtils.Results.Success -> {
                     _addPopularStation.postValue(result.data)
                     _errorMessage.postValue(null)

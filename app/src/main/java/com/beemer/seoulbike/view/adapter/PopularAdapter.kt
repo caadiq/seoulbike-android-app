@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.RowStationPopularBinding
 import com.beemer.seoulbike.model.dto.StationPopularDto
-import com.beemer.seoulbike.view.diff.PopularListDiffUtil
+import com.beemer.seoulbike.view.diff.StationPopularListDiffUtil
 
 class PopularAdapter : RecyclerView.Adapter<PopularAdapter.ViewHolder>() {
     private var itemList = mutableListOf<StationPopularDto>()
@@ -54,7 +54,7 @@ class PopularAdapter : RecyclerView.Adapter<PopularAdapter.ViewHolder>() {
     }
 
     fun setItemList(list: List<StationPopularDto>) {
-        val diffCallBack = PopularListDiffUtil(itemList, list)
+        val diffCallBack = StationPopularListDiffUtil(itemList, list)
         val diffResult = DiffUtil.calculateDiff(diffCallBack)
 
         itemList.clear()

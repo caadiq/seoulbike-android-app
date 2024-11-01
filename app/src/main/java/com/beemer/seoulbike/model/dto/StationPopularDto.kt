@@ -1,7 +1,8 @@
 package com.beemer.seoulbike.model.dto
 
 data class StationPopularDto(
+    val stationId: String,
     val stationNo: String,
     val stationNm: String,
-    var rank: Int = 0
+    val rank: Int
 )

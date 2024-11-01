@@ -21,9 +21,7 @@ class SearchHistoryAdapter(private val listener: OnDeleteClickListener) : Recycl
         private const val VIEW_TYPE_EMPTY = 0
     }
 
-    override fun getItemViewType(position: Int): Int {
-        return if (itemList.isEmpty()) VIEW_TYPE_EMPTY else VIEW_TYPE_ITEM
-    }
+    override fun getItemViewType(position: Int): Int = if (itemList.isEmpty()) VIEW_TYPE_EMPTY else VIEW_TYPE_ITEM
 
     override fun getItemCount(): Int = if (itemList.isEmpty()) 1 else itemList.size
 

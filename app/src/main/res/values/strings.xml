@@ -1,3 +1,45 @@
 <resources>
-    <string name="app_name">따릉이</string>
+    <string name="app_name">따릉이 현황</string>
+
+    <!--activity_main.xml-->
+    <string name="str_main_tab_map">지도</string>
+    <string name="str_main_tab_station">대여소</string>
+
+    <!--activity_search.xml-->
+    <string name="str_search_hint">대여소 검색</string>
+
+    <!--fragment_map.xml-->
+    <string name="str_map_reload">새로고침</string>
+
+    <!--fragment_station.xml-->
+    <string name="str_station_favorite">즐겨찾기</string>
+    <string name="str_station_nearby">내 주변 대여소</string>
+    <string name="str_station_retry">재시도</string>
+    <string name="str_station_error_network">네트워크 오류가 발생했습니다.</string>
+    <string name="str_station_no_stations">500m 이내 대여소가 없습니다.</string>
+
+    <!--fragment_search_1.xml-->
+    <string name="str_search_recent">최근 검색</string>
+    <string name="str_search_popular">인기 대여소</string>
+
+    <!--fragment_search_2.xml-->
+    <string name="str_search_no_search">검색 결과가 없습니다.</string>
+
+    <!--row_station_empty_favorite.xml-->
+    <string name="str_station_no_favorite">즐겨찾는 대여소가 없습니다.</string>
+
+    <!--row_empty_search_history.xml-->
+    <string name="str_search_no_history">최근 검색한 기록이 없습니다.</string>
+
+    <!--dialog_bottomsheet_status.xml-->
+    <string name="str_bottomsheet_status_update">업데이트</string>
+    <string name="str_bottomsheet_status_qrbike">일반</string>
+    <string name="str_bottomsheet_status_elecbike">새싹</string>
+    <string name="str_bottomsheet_status_rack">거치대</string>
+
+    <!--MainActivity.kt-->
+    <string name="str_main_press_back">뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.</string>
+
+    <!--MapFragment.kt-->
+    <string name="str_map_reloading">새로고침 중…</string>
 </resources>

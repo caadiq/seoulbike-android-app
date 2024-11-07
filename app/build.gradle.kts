@@ -4,6 +4,8 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.hilt)
 }
 
 fun getProperty(propertyKey: String): String {
@@ -33,6 +35,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String","BASE_URL", getProperty("BASE_URL"))
+        buildConfigField("String","NAVER_CLIENT_ID", getProperty("NAVER_CLIENT_ID"))
     }
 
     buildTypes {
@@ -62,9 +65,25 @@ dependencies {
     // androidx
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
 
     // google
     implementation(libs.material)
+    implementation(libs.location)
+    implementation(libs.flexbox)
+
+    // hilt
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.navigation)
+    ksp(libs.hilt.android.compiler)
+
+    // 기타
+    implementation(libs.naver.maps)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.progress.button)
+    implementation(libs.lottie)
 }

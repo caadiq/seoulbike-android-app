@@ -48,8 +48,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var locationSource: FusedLocationSource
     private val markerList = mutableListOf<Marker>()
 
-    private var isInitialLocationSet = false
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
 
@@ -111,13 +109,11 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
         // 카메라 이동 후 멈출 때
         naverMap.addOnCameraIdleListener {
-            if (isInitialLocationSet) {
-                val cameraPosition = naverMap.cameraPosition
-                val lat = cameraPosition.target.latitude
-                val lon = cameraPosition.target.longitude
+            val cameraPosition = naverMap.cameraPosition
+            val lat = cameraPosition.target.latitude
+            val lon = cameraPosition.target.longitude
 
-                getNearbyStations(lat, lon, cameraPosition.zoom)
-            }
+            getNearbyStations(lat, lon, cameraPosition.zoom)
         }
     }
 
@@ -198,9 +194,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                 }
             }
 
-            errorMessage.observe(viewLifecycleOwner) { message ->
-                bikeViewModel.setLoading(false)
-                binding.btnReload.hideProgress(R.string.str_map_reload)
+            errorCode.observe(viewLifecycleOwner) { code ->
+                if (code != null)
+                    binding.btnReload.hideProgress(R.string.str_map_reload)
             }
         }
     }
@@ -222,8 +218,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             val cameraUpdate = CameraUpdate.scrollAndZoomTo(LatLng(lat, lon), zoomLevel)
             naverMap.moveCamera(cameraUpdate)
-
-            isInitialLocationSet = true
 
             getNearbyStations(lat, lon, zoomLevel)
         }.addOnFailureListener { }

@@ -3,22 +3,22 @@ package com.beemer.seoulbike.model.utils
 import retrofit2.Call
 import retrofit2.awaitResponse
 
-object ApiUtils {
+object RetrofitUtil {
     sealed class Results<out T> {
         data class Success<out T>(val data: T) : Results<T>()
-        data class Error(val message: String) : Results<Nothing>()
+        data class Error(val statusCode: Int) : Results<Nothing>()
     }
 
-    suspend fun <T> safeApiCall(call: Call<T>): Results<T> {
+    suspend fun <T> call(call: Call<T>): Results<T> {
         return try {
             val response = call.awaitResponse()
             if (response.isSuccessful) {
                 Results.Success(response.body()!!)
             } else {
-                Results.Error("${response.code()}: ${response.message()}")
+                Results.Error(response.code())
             }
         } catch (e: Exception) {
-            Results.Error(e.message ?: e.toString())
+            Results.Error(-1)
         }
     }
 }

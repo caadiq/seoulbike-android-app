@@ -163,8 +163,8 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
                 stationAdapter.setItemList(updatedList.filter { it.stationStatus.qrBikeCnt != null }.sortedBy { it.distance })
             }
 
-            errorMessage.observe(viewLifecycleOwner) { message ->
-                if (message != null) {
+            errorCode.observe(viewLifecycleOwner) { code ->
+                if (code != null) {
                     binding.swipeRefreshLayout.isRefreshing = false
                     binding.layoutBody.visibility = View.GONE
                     binding.txtEmptyList.visibility = View.GONE

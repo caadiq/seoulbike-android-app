@@ -1,7 +1,9 @@
 package com.beemer.seoulbike.view.view
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.location.Geocoder
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -97,7 +99,6 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
 
         binding.btnRetry.setOnClickListener {
             getLocation()
-            binding.swipeRefreshLayout.isRefreshing = true
         }
     }
 
@@ -178,6 +179,11 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
 
     @SuppressLint("MissingPermission")
     private fun getLocation() {
+        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+
+        if (!isGpsEnabled) return
+
         fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).addOnSuccessListener {
             if (!isViewModelInitialized) {
                 setupViewModel()

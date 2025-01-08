@@ -1,12 +1,15 @@
 package com.beemer.seoulbike.view.view
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.PointF
+import android.location.LocationManager
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
@@ -203,6 +206,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     @SuppressLint("MissingPermission")
     private fun getLocation(naverMap: NaverMap) {
+        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+
+        if (!isGpsEnabled) {
+            Toast.makeText(requireContext(), "GPS가 꺼져 있어 내 위치를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         fusedLocationClient.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null).addOnSuccessListener {
             val lat = it.latitude
             val lon = it.longitude

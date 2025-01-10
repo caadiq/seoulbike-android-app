@@ -98,7 +98,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         getLocation(naverMap)
 
         // 카메라 설정
-        naverMap.minZoom = 13.5
+        naverMap.minZoom = 10.0
         naverMap.maxZoom = 18.0
         naverMap.extent = LatLngBounds(LatLng(37.413294, 126.734086), LatLng(37.715133, 127.269311))
 
@@ -152,7 +152,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private fun setupViewModel() {
         bikeViewModel.apply {
             nearbyStations.observe(viewLifecycleOwner) { stations ->
-                bikeViewModel.setLoading(false)
                 binding.btnReload.hideProgress(R.string.str_map_reload)
 
                 markerList.forEach { it.map = null }

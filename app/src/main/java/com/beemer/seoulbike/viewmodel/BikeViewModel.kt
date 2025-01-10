@@ -43,7 +43,8 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
     fun getNearbyStations(myLat: Double, myLon: Double, mapLat: Double, mapLon: Double, distance: Double) {
         execute(
             call = { repository.getNearByStations(myLat, myLon, mapLat, mapLon, distance) },
-            onSuccess = { data -> _nearbyStations.postValue(data) }
+            onSuccess = { data -> _nearbyStations.postValue(data) },
+            onFinally = { setLoading(false) }
         )
     }
 

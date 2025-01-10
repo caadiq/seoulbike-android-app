@@ -10,6 +10,9 @@ open class BaseViewModel : ViewModel() {
     private val _errorCode = MutableLiveData<Int?>(null)
     val errorCode: MutableLiveData<Int?> = _errorCode
 
+    private val _errorMessage = MutableLiveData<String?>(null)
+    val errorMessage: MutableLiveData<String?> = _errorMessage
+
     protected fun <T> execute(call: suspend () -> RetrofitUtil.Results<T>, onSuccess: (T) -> Unit, onFinally: () -> Unit = {}) {
         viewModelScope.launch {
             try {
@@ -20,6 +23,7 @@ open class BaseViewModel : ViewModel() {
                     }
                     is RetrofitUtil.Results.Error -> {
                         _errorCode.postValue(result.statusCode)
+                        _errorMessage.postValue(result.message)
                     }
                 }
             } finally {

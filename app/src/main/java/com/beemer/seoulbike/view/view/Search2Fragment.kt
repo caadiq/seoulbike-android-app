@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.airbnb.lottie.LottieAnimationView
 import com.beemer.seoulbike.databinding.FragmentSearch2Binding
+import com.beemer.seoulbike.model.data.UserData
 import com.beemer.seoulbike.model.dto.StationDto
 import com.beemer.seoulbike.model.entity.FavoriteStationEntity
 import com.beemer.seoulbike.view.adapter.StationSearchAdapter
@@ -175,6 +176,6 @@ class Search2Fragment : Fragment(), StationSearchAdapter.OnFavoriteClickListener
         val query = searchViewModel.query.value
 
         if (lat != null && lng != null && query != null)
-            bikeViewModel.getStations(lat, lng, page, 20, query, refresh)
+            bikeViewModel.getStations(lat, lng, page, 20, query, refresh, UserData.accessToken)
     }
 }

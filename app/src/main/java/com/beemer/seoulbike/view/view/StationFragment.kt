@@ -196,6 +196,6 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
 //            binding.txtError.visibility = View.GONE
 //            binding.btnRetry.visibility = View.GONE
 //            bikeViewModel.getNearbyStations(lat, lon, lat, lon, 500.0)
-//        }.addOnFailureListener { }
+//        }.addOnFailureListener {}
 //    }
 }

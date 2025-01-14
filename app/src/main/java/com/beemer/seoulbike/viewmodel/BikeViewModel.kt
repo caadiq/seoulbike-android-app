@@ -28,27 +28,27 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
     private val _isRefreshed = MutableLiveData<Boolean>()
     val isRefreshed: LiveData<Boolean> = _isRefreshed
 
-    fun getNearbyStations(myLat: Double, myLon: Double, mapLat: Double, mapLon: Double, distance: Double) {
+    fun getNearbyStations(myLat: Double, myLon: Double, mapLat: Double, mapLon: Double, distance: Double, accessToken: String?) {
         execute(
-            call = { repository.getNearByStations(myLat, myLon, mapLat, mapLon, distance) },
+            call = { repository.getNearByStations(myLat, myLon, mapLat, mapLon, distance, accessToken) },
             onSuccess = { data -> _nearbyStations.postValue(data) },
             onFinally = { setLoading(false) }
         )
     }
 
-    fun getStationDetails(myLat: Double, myLon: Double, stationId: String) {
+    fun getStationDetails(myLat: Double, myLon: Double, stationId: String, accessToken: String?) {
         execute(
-            call = { repository.getStationDetails(myLat, myLon, stationId) },
+            call = { repository.getStationDetails(myLat, myLon, stationId, accessToken) },
             onSuccess = { data -> _stationDetails.postValue(data) }
         )
     }
 
-    fun getStations(myLat: Double, myLon: Double, page: Int?, limit: Int?, query: String, refresh: Boolean) {
+    fun getStations(myLat: Double, myLon: Double, page: Int?, limit: Int?, query: String, refresh: Boolean, accessToken: String?) {
         setLoading(true)
         _isRefreshed.value = refresh
 
         execute(
-            call = { repository.getStations(myLat, myLon, page, limit, query) },
+            call = { repository.getStations(myLat, myLon, page, limit, query, accessToken) },
             onSuccess = { data ->
                 _stations.postValue(
                     if (refresh) {

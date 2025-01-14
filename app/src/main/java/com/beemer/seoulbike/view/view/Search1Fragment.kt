@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.beemer.seoulbike.databinding.FragmentSearch1Binding
+import com.beemer.seoulbike.model.data.UserData
 import com.beemer.seoulbike.model.dto.StationPopularDto
 import com.beemer.seoulbike.model.entity.SearchHistoryEntity
 import com.beemer.seoulbike.view.adapter.PopularAdapter
@@ -90,7 +91,7 @@ class Search1Fragment : Fragment(), SearchHistoryAdapter.OnDeleteClickListener {
 
         popularAdapter.setOnItemClickListener { item, _ ->
             val (lat, lon) = searchViewModel.location.value ?: return@setOnItemClickListener
-            bikeViewModel.getStationDetails(lat, lon, item.stationId)
+            bikeViewModel.getStationDetails(lat, lon, item.stationId, UserData.accessToken)
         }
     }
 

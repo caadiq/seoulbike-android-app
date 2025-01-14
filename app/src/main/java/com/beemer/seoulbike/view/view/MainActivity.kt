@@ -132,12 +132,17 @@ class MainActivity : AppCompatActivity() {
 
         authViewModel.apply {
             reissueAllTokens.observe(this@MainActivity) {
+                UserData.apply {
+                    isLoggedIn = true
+                    accessToken = it.accessToken
+                    refreshToken = it.refreshToken
+                }
+
                 authViewModel.getUser()
             }
 
             user.observe(this@MainActivity) {
                 UserData.apply {
-                    isLoggedIn = true
                     email = it.email
                     nickname = it.nickname
                     socialType = it.socialType

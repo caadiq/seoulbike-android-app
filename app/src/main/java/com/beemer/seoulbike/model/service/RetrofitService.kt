@@ -2,6 +2,7 @@ package com.beemer.seoulbike.model.service
 
 import com.beemer.seoulbike.BuildConfig
 import com.beemer.seoulbike.model.api.AuthApi
+import com.beemer.seoulbike.model.data.UserData
 import com.beemer.seoulbike.model.dto.TokenDto
 import com.beemer.seoulbike.model.repository.DataStoreRepository
 import kotlinx.coroutines.flow.first
@@ -80,7 +81,10 @@ class ResponseInterceptor @Inject constructor(private val dataStoreRepository: D
                     authApi.reissueAccessToken(TokenDto(accessToken, refreshToken)).execute().run {
                         if (isSuccessful) {
                             body()?.accessToken?.let { newAccessToken ->
-                                runBlocking { dataStoreRepository.saveAccessToken(newAccessToken) }
+                                runBlocking {
+                                    dataStoreRepository.saveAccessToken(newAccessToken)
+                                    UserData.accessToken = newAccessToken
+                                }
 
                                 val newRequest = chain.request().newBuilder()
                                     .addHeader("Authorization", "Bearer $newAccessToken")

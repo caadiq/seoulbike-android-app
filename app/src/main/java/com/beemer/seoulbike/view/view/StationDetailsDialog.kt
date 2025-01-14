@@ -188,6 +188,6 @@ class StationDetailsDialog(
                 isVisible = true
                 position = LatLng(lat, lon)
             }
-        }.addOnFailureListener { }
+        }.addOnFailureListener {}
     }
 }

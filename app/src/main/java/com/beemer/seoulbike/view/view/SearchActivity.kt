@@ -9,6 +9,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.beemer.seoulbike.databinding.ActivitySearchBinding
+import com.beemer.seoulbike.model.data.UserData
 import com.beemer.seoulbike.viewmodel.BikeViewModel
 import com.beemer.seoulbike.viewmodel.PopularViewModel
 import com.beemer.seoulbike.viewmodel.SearchFragmentType
@@ -141,9 +142,9 @@ class SearchActivity : AppCompatActivity() {
 
             searchViewModel.setMyLocation(Pair(lat, lon))
             query?.let {
-                bikeViewModel.getStations(lat, lon, 0, 20, query, true)
+                bikeViewModel.getStations(lat, lon, 0, 20, query, true, UserData.accessToken)
             }
 
-        }.addOnFailureListener { }
+        }.addOnFailureListener {}
     }
 }

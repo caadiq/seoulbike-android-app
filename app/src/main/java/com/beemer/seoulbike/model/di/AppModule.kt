@@ -88,7 +88,7 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideBikeRepository(@BasicRetrofit retrofit: Retrofit, @AuthRetrofit authRetrofit: Retrofit): BikeRepository = BikeRepository(retrofit, authRetrofit)
+    fun provideBikeRepository(@BasicRetrofit retrofit: Retrofit): BikeRepository = BikeRepository(retrofit)
 
     @Provides
     @Singleton

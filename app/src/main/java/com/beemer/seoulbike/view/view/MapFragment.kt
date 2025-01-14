@@ -18,6 +18,7 @@ import androidx.fragment.app.viewModels
 import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.FragmentMapBinding
 import com.beemer.seoulbike.databinding.MarkerCustomBinding
+import com.beemer.seoulbike.model.data.UserData
 import com.beemer.seoulbike.viewmodel.BikeViewModel
 import com.beemer.seoulbike.viewmodel.MainViewModel
 import com.github.razir.progressbutton.bindProgressButton
@@ -253,7 +254,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val myLat = myLocation.first
             val myLon = myLocation.second
 
-            bikeViewModel.getNearbyStations(myLat ?: lat, myLon ?: lon, lat, lon, distance)
+            bikeViewModel.getNearbyStations(myLat ?: lat, myLon ?: lon, lat, lon, distance, UserData.accessToken)
+
             bikeViewModel.setLoading(true)
             binding.btnReload.visibility = View.VISIBLE
         }

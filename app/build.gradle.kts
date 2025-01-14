@@ -70,6 +70,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.livedata)
+    implementation(libs.androidx.splashscreen)
     ksp(libs.androidx.room.compiler)
 
     // google

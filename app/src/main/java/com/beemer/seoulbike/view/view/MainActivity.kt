@@ -15,21 +15,32 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.splashscreen.SplashScreen
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.ActivityMainBinding
+import com.beemer.seoulbike.model.data.UserData
+import com.beemer.seoulbike.model.dto.TokenDto
+import com.beemer.seoulbike.viewmodel.AuthViewModel
+import com.beemer.seoulbike.viewmodel.DataStoreViewModel
 import com.beemer.seoulbike.viewmodel.MainFragmentType
 import com.beemer.seoulbike.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
 
-    private val mainViewModel: MainViewModel by viewModels()
+    private val dataStoreViewModel by viewModels<DataStoreViewModel>()
+    private val authViewModel by viewModels<AuthViewModel>()
+    private val mainViewModel by viewModels<MainViewModel>()
 
     private var backPressedTime: Long = 0
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -53,31 +64,17 @@ class MainActivity : AppCompatActivity() {
         android.Manifest.permission.ACCESS_COARSE_LOCATION
     )
 
+    private lateinit var splashScreen: SplashScreen
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        splashScreen()
         setContentView(binding.root)
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.layoutChild) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.containerView) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updateLayoutParams<MarginLayoutParams> { bottomMargin = insets.bottom }
-            WindowInsetsCompat.CONSUMED
-        }
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.navigationView) { v, windowInsets ->
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.updateLayoutParams<MarginLayoutParams> { bottomMargin = insets.bottom }
-            WindowInsetsCompat.CONSUMED
-        }
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
+        setupInsets()
         checkPermissions()
     }
 
@@ -88,7 +85,6 @@ class MainActivity : AppCompatActivity() {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 setupFragment()
 //                setupViewModel()
-//                setupTabLayout()
                 setupView()
             } else {
                 DefaultDialog(
@@ -115,11 +111,74 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun splashScreen() {
+        splashScreen = installSplashScreen()
+
+        splashScreen.setKeepOnScreenCondition { true }
+
+        lifecycleScope.launch {
+            val accessToken = dataStoreViewModel.accessToken.first()
+            val refreshToken = dataStoreViewModel.refreshToken.first()
+
+            if (!accessToken.isNullOrEmpty() && !refreshToken.isNullOrEmpty()) {
+                authViewModel.reissueAllTokens(TokenDto(
+                    accessToken = accessToken,
+                    refreshToken = refreshToken
+                ))
+            } else {
+                splashScreen.setKeepOnScreenCondition { false }
+            }
+        }
+
+        authViewModel.apply {
+            reissueAllTokens.observe(this@MainActivity) {
+                authViewModel.getUser()
+            }
+
+            user.observe(this@MainActivity) {
+                UserData.apply {
+                    isLoggedIn = true
+                    email = it.email
+                    nickname = it.nickname
+                    socialType = it.socialType
+                    createdDate = it.createdDate
+                }
+
+                splashScreen.setKeepOnScreenCondition { false }
+            }
+
+            errorCode.observe(this@MainActivity) { code ->
+                if (code == 401)
+                    splashScreen.setKeepOnScreenCondition { false }
+            }
+        }
+    }
+
+    private fun setupInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.layoutChild) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.containerView) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updateLayoutParams<MarginLayoutParams> { bottomMargin = insets.bottom }
+            WindowInsetsCompat.CONSUMED
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navigationView) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updateLayoutParams<MarginLayoutParams> { bottomMargin = insets.bottom }
+            v.setPadding(insets.left, insets.top, insets.right, 0)
+            WindowInsetsCompat.CONSUMED
+        }
+    }
+
     private fun checkPermissions() {
         if (ContextCompat.checkSelfPermission(this, locationPermissions[0]) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, locationPermissions[1]) == PackageManager.PERMISSION_GRANTED) {
             setupFragment()
 //            setupViewModel()
-//            setupTabLayout()
             setupView()
         } else {
             ActivityCompat.requestPermissions(this, locationPermissions, PERMISSION_REQUEST_CODE)
@@ -139,20 +198,6 @@ class MainActivity : AppCompatActivity() {
             commit()
         }
     }
-
-//    private fun setupTabLayout() {
-//        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-//            override fun onTabSelected(tab: TabLayout.Tab?) {
-//                tab?.let {
-//                    mainViewModel.setCurrentFragment(it.position)
-//                }
-//            }
-//
-//            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-//
-//            override fun onTabReselected(tab: TabLayout.Tab?) {}
-//        })
-//    }
 
 //    private fun setupViewModel() {
 //        mainViewModel.currentFragmentType.observe(this) { fragmentType ->

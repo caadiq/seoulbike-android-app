@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.beemer.seoulbike.model.dto.PageDto
 import com.beemer.seoulbike.model.dto.StationDto
-import com.beemer.seoulbike.model.dto.StationPopularDto
 import com.beemer.seoulbike.model.repository.BikeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -19,14 +18,6 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
 
     private val _stations = MutableLiveData<List<StationDto>>()
     val stations: LiveData<List<StationDto>> = _stations
-
-    private val _favoriteStations = MutableLiveData<List<StationDto>>()
-    val favoriteStations: LiveData<List<StationDto>> = _favoriteStations
-
-    private val _popularStations = MutableLiveData<List<StationPopularDto>>()
-    val popularStations: LiveData<List<StationPopularDto>> = _popularStations
-
-    private val _addPopularStation = MutableLiveData<Unit>()
 
     private val _page = MutableLiveData<PageDto>()
     val page: LiveData<PageDto> = _page
@@ -72,27 +63,6 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
                 _page.postValue(data.page)
             },
             onFinally = { setLoading(false) }
-        )
-    }
-
-    fun getFavoriteStations(myLat: Double, myLon: Double, page: Int?, limit: Int?, stationId: List<String>) {
-        execute(
-            call = { repository.getFavoriteStations(myLat, myLon, page, limit, stationId) },
-            onSuccess = { data -> _favoriteStations.postValue(data.stations) }
-        )
-    }
-
-    fun getPopularStations() {
-        execute(
-            call = { repository.getPopularStations() },
-            onSuccess = { data -> _popularStations.postValue(data) }
-        )
-    }
-
-    fun addPopularStation(stationId: String) {
-        execute(
-            call = { repository.addPopularStation(stationId) },
-            onSuccess = { _addPopularStation.postValue(it) }
         )
     }
 

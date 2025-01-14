@@ -35,21 +35,4 @@ interface BikeApi {
         @Query("limit") limit: Int?,
         @Query("query") query: String
     ): Call<StationSearchDto>
-
-    @POST("/api/seoulbike/stations")
-    fun getFavoriteStations(
-        @Query("my_lat") myLat: Double,
-        @Query("my_lon") myLon: Double,
-        @Query("page") page: Int?,
-        @Query("limit") limit: Int?,
-        @Body stationId: List<String>
-    ): Call<StationSearchDto>
-
-    @GET("/api/seoulbike/stations/popular")
-    fun getPopularStations(): Call<List<StationPopularDto>>
-
-    @POST("/api/seoulbike/stations/popular")
-    fun addPopularStation(
-        @Query("stationId") stationId: String
-    ): Call<Unit>
 }

@@ -10,6 +10,7 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.beemer.seoulbike.databinding.ActivitySearchBinding
 import com.beemer.seoulbike.viewmodel.BikeViewModel
+import com.beemer.seoulbike.viewmodel.PopularViewModel
 import com.beemer.seoulbike.viewmodel.SearchFragmentType
 import com.beemer.seoulbike.viewmodel.SearchHistoryViewModel
 import com.beemer.seoulbike.viewmodel.SearchViewModel
@@ -23,6 +24,7 @@ class SearchActivity : AppCompatActivity() {
     private val binding by lazy { ActivitySearchBinding.inflate(layoutInflater) }
 
     private val bikeViewModel by viewModels<BikeViewModel>()
+    private val popularViewModel by viewModels<PopularViewModel>()
     private val searchViewModel by viewModels<SearchViewModel>()
     private val searchHistoryViewModel by viewModels<SearchHistoryViewModel>()
 

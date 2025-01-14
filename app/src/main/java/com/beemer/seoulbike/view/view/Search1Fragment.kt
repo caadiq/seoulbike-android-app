@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.beemer.seoulbike.databinding.FragmentSearch1Binding
 import com.beemer.seoulbike.model.dto.StationPopularDto
@@ -14,6 +13,7 @@ import com.beemer.seoulbike.model.entity.SearchHistoryEntity
 import com.beemer.seoulbike.view.adapter.PopularAdapter
 import com.beemer.seoulbike.view.adapter.SearchHistoryAdapter
 import com.beemer.seoulbike.viewmodel.BikeViewModel
+import com.beemer.seoulbike.viewmodel.PopularViewModel
 import com.beemer.seoulbike.viewmodel.SearchHistoryViewModel
 import com.beemer.seoulbike.viewmodel.SearchViewModel
 import com.google.android.flexbox.FlexDirection
@@ -28,7 +28,8 @@ class Search1Fragment : Fragment(), SearchHistoryAdapter.OnDeleteClickListener {
 
     private val searchViewModel by activityViewModels<SearchViewModel>()
     private val searchHistoryViewModel by activityViewModels<SearchHistoryViewModel>()
-    private val bikeViewModel by viewModels<BikeViewModel>()
+    private val bikeViewModel by activityViewModels<BikeViewModel>()
+    private val popularViewModel by activityViewModels<PopularViewModel>()
 
     private lateinit var searchHistoryAdapter: SearchHistoryAdapter
     private val popularAdapter = PopularAdapter()
@@ -109,6 +110,14 @@ class Search1Fragment : Fragment(), SearchHistoryAdapter.OnDeleteClickListener {
         }
 
         bikeViewModel.apply {
+            station.observe(viewLifecycleOwner) { station ->
+                StationDetailsDialog(
+                    item = station
+                ).show(childFragmentManager, "DetailsDialog")
+            }
+        }
+
+        popularViewModel.apply {
             getPopularStations()
 
             popularStations.observe(viewLifecycleOwner) { stations ->
@@ -124,12 +133,6 @@ class Search1Fragment : Fragment(), SearchHistoryAdapter.OnDeleteClickListener {
                 }
 
                 popularAdapter.setItemList(rearrangedList)
-            }
-
-            station.observe(viewLifecycleOwner) { station ->
-                StationDetailsDialog(
-                    item = station
-                ).show(childFragmentManager, "DetailsDialog")
             }
         }
     }

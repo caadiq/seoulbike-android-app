@@ -68,6 +68,8 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.livedata)
     ksp(libs.androidx.room.compiler)
 
     // google

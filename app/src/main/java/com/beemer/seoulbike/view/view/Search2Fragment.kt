@@ -16,6 +16,7 @@ import com.beemer.seoulbike.model.entity.FavoriteStationEntity
 import com.beemer.seoulbike.view.adapter.StationSearchAdapter
 import com.beemer.seoulbike.viewmodel.BikeViewModel
 import com.beemer.seoulbike.viewmodel.FavoriteStationViewModel
+import com.beemer.seoulbike.viewmodel.PopularViewModel
 import com.beemer.seoulbike.viewmodel.SearchViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -26,6 +27,7 @@ class Search2Fragment : Fragment(), StationSearchAdapter.OnFavoriteClickListener
 
     private val searchViewModel by activityViewModels<SearchViewModel>()
     private val bikeViewModel by activityViewModels<BikeViewModel>()
+    private val popularViewModel by activityViewModels<PopularViewModel>()
     private val favoriteStationViewModel by viewModels<FavoriteStationViewModel>()
 
     private lateinit var stationSearchAdapter: StationSearchAdapter
@@ -103,7 +105,7 @@ class Search2Fragment : Fragment(), StationSearchAdapter.OnFavoriteClickListener
         }
 
         stationSearchAdapter.setOnItemClickListener { item, _ ->
-            bikeViewModel.addPopularStation(item.stationId)
+            popularViewModel.addPopularStation(item.stationId)
 
             StationDetailsDialog(
                 item = item,

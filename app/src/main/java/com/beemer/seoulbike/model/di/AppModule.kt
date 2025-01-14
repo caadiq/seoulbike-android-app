@@ -5,17 +5,32 @@ import android.content.Context
 import androidx.room.Room
 import com.beemer.seoulbike.model.dao.FavoriteStationDao
 import com.beemer.seoulbike.model.dao.SearchHistoryDao
+import com.beemer.seoulbike.model.data.DataStoreModule
 import com.beemer.seoulbike.model.database.Database
+import com.beemer.seoulbike.model.repository.AuthRepository
 import com.beemer.seoulbike.model.repository.BikeRepository
+import com.beemer.seoulbike.model.repository.DataStoreRepository
+import com.beemer.seoulbike.model.repository.FavoriteRepository
 import com.beemer.seoulbike.model.repository.FavoriteStationRepository
+import com.beemer.seoulbike.model.repository.PopularRepository
 import com.beemer.seoulbike.model.repository.SearchHistoryRepository
 import com.beemer.seoulbike.model.service.RetrofitService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
+import javax.inject.Qualifier
 import javax.inject.Singleton
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class BasicRetrofit
+
+@Qualifier
+@Retention(AnnotationRetention.BINARY)
+annotation class AuthRetrofit
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -27,7 +42,21 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(): Retrofit = RetrofitService.getRetrofit()
+    fun provideRetrofitService(dataStoreRepository: DataStoreRepository): RetrofitService = RetrofitService(dataStoreRepository)
+
+    @Provides
+    @Singleton
+    @BasicRetrofit
+    fun provideRetrofit(retrofitService: RetrofitService): Retrofit = retrofitService.getRetrofit()
+
+    @Provides
+    @Singleton
+    @AuthRetrofit
+    fun provideAuthRetrofit(retrofitService: RetrofitService): Retrofit = retrofitService.getAuthRetrofit()
+
+    @Provides
+    @Singleton
+    fun provideDataStoreModule(@ApplicationContext context: Context) = DataStoreModule(context)
 
     @Provides
     @Singleton
@@ -49,8 +78,23 @@ class AppModule {
     @Singleton
     fun provideSearchHistoryRepository(dao: SearchHistoryDao): SearchHistoryRepository = SearchHistoryRepository(dao)
 
+    @Provides
+    @Singleton
+    fun provideDataStoreRepository(dataStoreModule: DataStoreModule) = DataStoreRepository(dataStoreModule)
 
     @Provides
     @Singleton
-    fun provideBikeRepository(retrofit: Retrofit): BikeRepository = BikeRepository(retrofit)
+    fun provideAuthRepository(@BasicRetrofit retrofit: Retrofit, @AuthRetrofit authRetrofit: Retrofit): AuthRepository = AuthRepository(retrofit, authRetrofit)
+
+    @Provides
+    @Singleton
+    fun provideBikeRepository(@BasicRetrofit retrofit: Retrofit, @AuthRetrofit authRetrofit: Retrofit): BikeRepository = BikeRepository(retrofit, authRetrofit)
+
+    @Provides
+    @Singleton
+    fun provideFavoriteRepository(@AuthRetrofit authRetrofit: Retrofit) = FavoriteRepository(authRetrofit)
+
+    @Provides
+    @Singleton
+    fun providePopularRepository(@BasicRetrofit retrofit: Retrofit) = PopularRepository(retrofit)
 }

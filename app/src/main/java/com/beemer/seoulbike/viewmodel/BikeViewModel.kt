@@ -13,17 +13,14 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
     private val _nearbyStations = MutableLiveData<List<StationDto>>()
     val nearbyStations: LiveData<List<StationDto>> = _nearbyStations
 
-    private val _station = MutableLiveData<StationDto>()
-    val station: LiveData<StationDto> = _station
+    private val _stationDetails = MutableLiveData<StationDto>()
+    val stationDetails: LiveData<StationDto> = _stationDetails
 
     private val _stations = MutableLiveData<List<StationDto>>()
     val stations: LiveData<List<StationDto>> = _stations
 
     private val _page = MutableLiveData<PageDto>()
     val page: LiveData<PageDto> = _page
-
-    private val _myLocation = MutableLiveData<Pair<Double, Double>>()
-    val myLocation: LiveData<Pair<Double, Double>> = _myLocation
 
     private val _isLoading = MutableLiveData(false)
     val isLoading: LiveData<Boolean> = _isLoading
@@ -39,10 +36,10 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
         )
     }
 
-    fun getStation(myLat: Double, myLon: Double, stationId: String) {
+    fun getStationDetails(myLat: Double, myLon: Double, stationId: String) {
         execute(
-            call = { repository.getStation(myLat, myLon, stationId) },
-            onSuccess = { data -> _station.postValue(data) }
+            call = { repository.getStationDetails(myLat, myLon, stationId) },
+            onSuccess = { data -> _stationDetails.postValue(data) }
         )
     }
 
@@ -68,9 +65,5 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
 
     fun setLoading(isLoading: Boolean) {
         _isLoading.postValue(isLoading)
-    }
-
-    fun setMyLocation(lat: Double, lon: Double) {
-        _myLocation.postValue(Pair(lat, lon))
     }
 }

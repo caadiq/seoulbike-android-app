@@ -90,7 +90,7 @@ class Search1Fragment : Fragment(), SearchHistoryAdapter.OnDeleteClickListener {
 
         popularAdapter.setOnItemClickListener { item, _ ->
             val (lat, lon) = searchViewModel.location.value ?: return@setOnItemClickListener
-            bikeViewModel.getStation(lat, lon, item.stationId)
+            bikeViewModel.getStationDetails(lat, lon, item.stationId)
         }
     }
 
@@ -110,7 +110,7 @@ class Search1Fragment : Fragment(), SearchHistoryAdapter.OnDeleteClickListener {
         }
 
         bikeViewModel.apply {
-            station.observe(viewLifecycleOwner) { station ->
+            stationDetails.observe(viewLifecycleOwner) { station ->
                 StationDetailsDialog(
                     item = station
                 ).show(childFragmentManager, "DetailsDialog")

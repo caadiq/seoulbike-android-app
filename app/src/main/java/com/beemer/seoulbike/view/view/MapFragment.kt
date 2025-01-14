@@ -13,11 +13,13 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.FragmentMapBinding
 import com.beemer.seoulbike.databinding.MarkerCustomBinding
 import com.beemer.seoulbike.viewmodel.BikeViewModel
+import com.beemer.seoulbike.viewmodel.MainViewModel
 import com.github.razir.progressbutton.bindProgressButton
 import com.github.razir.progressbutton.hideProgress
 import com.github.razir.progressbutton.showProgress
@@ -42,6 +44,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private var _binding : FragmentMapBinding? = null
     private val binding get() = _binding!!
 
+    private val mainViewModel by activityViewModels<MainViewModel>()
     private val bikeViewModel by viewModels<BikeViewModel>()
 
     private val PERMISSION_REQUEST_CODE = 1001
@@ -50,6 +53,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationSource: FusedLocationSource
     private val markerList = mutableListOf<Marker>()
+
+    private var isFirstLoad = false
+    private var myLocation: Pair<Double?, Double?> = Pair(null, null)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentMapBinding.inflate(inflater, container, false)
@@ -83,8 +89,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             isScaleBarEnabled = false // 축척바
             isZoomControlEnabled = false // 줌 컨트롤
             isLocationButtonEnabled = false // 현위치 버튼
-            logoGravity = Gravity.TOP or Gravity.START // 네이버 로고 위치
-            setLogoMargin(16, 16, 0, 0) // 네이버 로고 마진
+            logoGravity = Gravity.BOTTOM or Gravity.START // 네이버 로고 위치
+            setLogoMargin(0, 0, 0, 0) // 네이버 로고 마진
         }
         binding.scaleBar.map = naverMap // 축척바 설정
         binding.locationButton.map = naverMap // 현위치 버튼 설정
@@ -102,21 +108,9 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         naverMap.maxZoom = 18.0
         naverMap.extent = LatLngBounds(LatLng(37.413294, 126.734086), LatLng(37.715133, 127.269311))
 
-        // 카메라 이동시
-        naverMap.addOnLocationChangeListener { location ->
-            val lat = location.latitude
-            val lon = location.longitude
-
-            bikeViewModel.setMyLocation(lat, lon)
-        }
-
         // 카메라 이동 후 멈출 때
         naverMap.addOnCameraIdleListener {
-            val cameraPosition = naverMap.cameraPosition
-            val lat = cameraPosition.target.latitude
-            val lon = cameraPosition.target.longitude
-
-            getNearbyStations(lat, lon, cameraPosition.zoom)
+            getNearbyStations(naverMap)
         }
     }
 
@@ -140,11 +134,7 @@ class MapFragment : Fragment(), OnMapReadyCallback {
                     progressColor = ContextCompat.getColor(requireContext(), R.color.white)
                 }
 
-                val cameraPosition = naverMap.cameraPosition
-                val lat = cameraPosition.target.latitude
-                val lon = cameraPosition.target.longitude
-
-                getNearbyStations(lat, lon, cameraPosition.zoom)
+                getNearbyStations(naverMap)
             }
         }
     }
@@ -217,7 +207,8 @@ class MapFragment : Fragment(), OnMapReadyCallback {
             val lat = it.latitude
             val lon = it.longitude
 
-            bikeViewModel.setMyLocation(lat, lon)
+            myLocation = Pair(lat, lon)
+            mainViewModel.setMyLocation(lat, lon)
 
             naverMap.locationOverlay.run {
                 isVisible = true
@@ -228,12 +219,20 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
             val cameraUpdate = CameraUpdate.scrollAndZoomTo(LatLng(lat, lon), zoomLevel)
             naverMap.moveCamera(cameraUpdate)
-
-            getNearbyStations(lat, lon, zoomLevel)
-        }.addOnFailureListener { }
+        }.addOnFailureListener {}
     }
 
-    private fun getNearbyStations(mapLat: Double, mapLon: Double, zoomLevel: Double) {
+    private fun getNearbyStations(naverMap: NaverMap) {
+        if (!isFirstLoad) {
+            isFirstLoad = true
+            return
+        }
+
+        val cameraPosition = naverMap.cameraPosition
+        val lat = cameraPosition.target.latitude
+        val lon = cameraPosition.target.longitude
+        val zoomLevel = cameraPosition.zoom
+
         val distance = when (zoomLevel) {
             in 13.5..14.5 -> 1500.0
             in 14.5..15.0 -> 1000.0
@@ -249,12 +248,14 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         if (distance == null) {
             markerList.forEach { it.map = null }
             markerList.clear()
+            binding.btnReload.visibility = View.GONE
         } else {
-            val myLat = bikeViewModel.myLocation.value?.first
-            val myLon = bikeViewModel.myLocation.value?.second
+            val myLat = myLocation.first
+            val myLon = myLocation.second
 
-            bikeViewModel.getNearbyStations(myLat ?: mapLat, myLon ?: mapLon, mapLat, mapLon, distance)
+            bikeViewModel.getNearbyStations(myLat ?: lat, myLon ?: lon, lat, lon, distance)
             bikeViewModel.setLoading(true)
+            binding.btnReload.visibility = View.VISIBLE
         }
     }
 }

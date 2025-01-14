@@ -21,12 +21,12 @@ class BikeRepository @Inject constructor(@BasicRetrofit retrofit: Retrofit, @Aut
         return RetrofitUtil.call(bikeApiAuth.getNearByStations(myLat, myLon, maoLat, mapLon, distance))
     }
 
-    suspend fun getStation(myLat: Double, myLon: Double, stationId: String): RetrofitUtil.Results<StationDto> {
-        return RetrofitUtil.call(bikeApi.getStation(myLat, myLon, stationId))
+    suspend fun getStationDetails(myLat: Double, myLon: Double, stationId: String): RetrofitUtil.Results<StationDto> {
+        return RetrofitUtil.call(bikeApi.getStationDetails(myLat, myLon, stationId))
     }
 
     suspend fun getStationAuth(myLat: Double, myLon: Double, stationId: String): RetrofitUtil.Results<StationDto> {
-        return RetrofitUtil.call(bikeApiAuth.getStation(myLat, myLon, stationId))
+        return RetrofitUtil.call(bikeApiAuth.getStationDetails(myLat, myLon, stationId))
     }
 
     suspend fun getStations(myLat: Double, myLon: Double, page: Int?, limit: Int?, query: String): RetrofitUtil.Results<StationSearchDto> {

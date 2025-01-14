@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="24dp"
         android:layout_marginTop="32dp"
-        android:background="@drawable/rectangle_white_rounded_8dp_ripple"
+        android:background="@drawable/rectangle_white_rounded_8dp"
         android:elevation="3dp"
         app:boxBackgroundMode="none"
         app:endIconMode="clear_text"

@@ -6,17 +6,23 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.view.View
+import android.view.ViewGroup.MarginLayoutParams
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updateLayoutParams
+import androidx.drawerlayout.widget.DrawerLayout
 import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.ActivityMainBinding
 import com.beemer.seoulbike.viewmodel.MainFragmentType
 import com.beemer.seoulbike.viewmodel.MainViewModel
-import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -28,11 +34,15 @@ class MainActivity : AppCompatActivity() {
     private var backPressedTime: Long = 0
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
         override fun handleOnBackPressed() {
-            if (System.currentTimeMillis() - backPressedTime >= 2000) {
-                backPressedTime = System.currentTimeMillis()
-                Toast.makeText(this@MainActivity, R.string.str_main_press_back, Toast.LENGTH_SHORT).show()
+            if (binding.navigationView.isShown) {
+                binding.drawerLayout.closeDrawer(binding.navigationView)
             } else {
-                finish()
+                if (System.currentTimeMillis() - backPressedTime >= 2000) {
+                    backPressedTime = System.currentTimeMillis()
+                    Toast.makeText(this@MainActivity, R.string.str_main_press_back, Toast.LENGTH_SHORT).show()
+                } else {
+                    finish()
+                }
             }
         }
     }
@@ -45,7 +55,26 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.layoutChild) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.containerView) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updateLayoutParams<MarginLayoutParams> { bottomMargin = insets.bottom }
+            WindowInsetsCompat.CONSUMED
+        }
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.navigationView) { v, windowInsets ->
+            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.updateLayoutParams<MarginLayoutParams> { bottomMargin = insets.bottom }
+            WindowInsetsCompat.CONSUMED
+        }
 
         onBackPressedDispatcher.addCallback(this, onBackPressedCallback)
 
@@ -58,8 +87,8 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 setupFragment()
-                setupViewModel()
-                setupTabLayout()
+//                setupViewModel()
+//                setupTabLayout()
                 setupView()
             } else {
                 DefaultDialog(
@@ -89,8 +118,8 @@ class MainActivity : AppCompatActivity() {
     private fun checkPermissions() {
         if (ContextCompat.checkSelfPermission(this, locationPermissions[0]) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, locationPermissions[1]) == PackageManager.PERMISSION_GRANTED) {
             setupFragment()
-            setupViewModel()
-            setupTabLayout()
+//            setupViewModel()
+//            setupTabLayout()
             setupView()
         } else {
             ActivityCompat.requestPermissions(this, locationPermissions, PERMISSION_REQUEST_CODE)
@@ -111,39 +140,56 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupTabLayout() {
-        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-                tab?.let {
-                    mainViewModel.setCurrentFragment(it.position)
-                }
-            }
+//    private fun setupTabLayout() {
+//        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+//            override fun onTabSelected(tab: TabLayout.Tab?) {
+//                tab?.let {
+//                    mainViewModel.setCurrentFragment(it.position)
+//                }
+//            }
+//
+//            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+//
+//            override fun onTabReselected(tab: TabLayout.Tab?) {}
+//        })
+//    }
 
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
-        })
-    }
-
-    private fun setupViewModel() {
-        mainViewModel.currentFragmentType.observe(this) { fragmentType ->
-            val currentFragment = supportFragmentManager.findFragmentByTag(fragmentType.tag)
-            supportFragmentManager.beginTransaction().apply {
-                supportFragmentManager.fragments.forEach { fragment ->
-                    if (fragment == currentFragment)
-                        show(fragment)
-                    else
-                        hide(fragment)
-                }
-            }.commit()
-
-            binding.tabLayout.getTabAt(fragmentType.ordinal)?.select()
-        }
-    }
+//    private fun setupViewModel() {
+//        mainViewModel.currentFragmentType.observe(this) { fragmentType ->
+//            val currentFragment = supportFragmentManager.findFragmentByTag(fragmentType.tag)
+//            supportFragmentManager.beginTransaction().apply {
+//                supportFragmentManager.fragments.forEach { fragment ->
+//                    if (fragment == currentFragment)
+//                        show(fragment)
+//                    else
+//                        hide(fragment)
+//                }
+//            }.commit()
+//
+//            binding.tabLayout.getTabAt(fragmentType.ordinal)?.select()
+//        }
+//    }
 
     private fun setupView() {
-        binding.btnSearch.setOnClickListener {
-            startActivity(Intent(this, SearchActivity::class.java))
+        binding.drawerLayout.apply {
+            setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+            addDrawerListener(object : DrawerLayout.DrawerListener {
+                override fun onDrawerSlide(drawerView: View, slideOffset: Float) {}
+
+                override fun onDrawerOpened(drawerView: View) {
+                    setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED)
+                }
+
+                override fun onDrawerClosed(drawerView: View) {
+                    setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
+                }
+
+                override fun onDrawerStateChanged(newState: Int) {}
+            })
+        }
+
+        binding.btnMenu.setOnClickListener {
+            binding.drawerLayout.openDrawer(binding.navigationView)
         }
     }
 }

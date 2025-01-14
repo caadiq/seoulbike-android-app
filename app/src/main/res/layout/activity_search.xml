@@ -28,7 +28,7 @@
             android:drawableStart="@drawable/icon_bike"
             android:drawablePadding="16dp"
             android:drawableTint="@color/colorPrimary"
-            android:fontFamily="@font/nanum_square_neo_bold"
+            android:fontFamily="@font/pretendard_bold"
             android:gravity="center_vertical"
             android:hint="@string/str_search_hint"
             android:imeOptions="actionSearch"

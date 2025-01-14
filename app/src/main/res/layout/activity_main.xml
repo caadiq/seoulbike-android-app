@@ -57,7 +57,7 @@
                 android:drawablePadding="12dp"
                 android:drawableTint="@color/gray"
                 android:elevation="4dp"
-                android:fontFamily="@font/nanum_square_neo_bold"
+                android:fontFamily="@font/pretendard_bold"
                 android:gravity="center_vertical"
                 android:paddingHorizontal="16dp"
                 android:text="@string/str_search_hint"

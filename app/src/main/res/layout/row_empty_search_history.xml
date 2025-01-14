@@ -2,7 +2,7 @@
 <androidx.appcompat.widget.AppCompatTextView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:fontFamily="@font/nanum_square_neo_bold"
+    android:fontFamily="@font/pretendard_bold"
     android:gravity="center"
     android:text="@string/str_search_no_history"
     android:textColor="@color/colorPrimary"

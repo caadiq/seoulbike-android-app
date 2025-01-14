@@ -39,7 +39,7 @@
         android:layout_marginBottom="16dp"
         android:background="@drawable/rectangle_secondary_rounded_24dp_ripple"
         android:elevation="2dp"
-        android:fontFamily="@font/nanum_square_neo_bold"
+        android:fontFamily="@font/pretendard_bold"
         android:paddingHorizontal="24dp"
         android:stateListAnimator="@null"
         android:text="@string/str_map_reload"

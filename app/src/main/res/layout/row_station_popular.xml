@@ -11,7 +11,7 @@
         android:layout_height="20dp"
         android:layout_marginTop="20dp"
         android:background="@drawable/rectangle_primary_rounded_4dp"
-        android:fontFamily="@font/nanum_square_neo_bold"
+        android:fontFamily="@font/pretendard_bold"
         android:gravity="center"
         android:minWidth="20dp"
         android:paddingHorizontal="4dp"
@@ -27,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:layout_marginTop="2dp"
-        android:fontFamily="@font/nanum_square_neo_bold"
+        android:fontFamily="@font/pretendard_bold"
         android:textColor="@color/colorSecondary"
         android:textSize="13dp"
         app:layout_constraintStart_toEndOf="@+id/txtRank"
@@ -41,7 +41,7 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:ellipsize="end"
-        android:fontFamily="@font/nanum_square_neo_bold"
+        android:fontFamily="@font/pretendard_bold"
         android:maxLines="1"
         android:textColor="@color/colorSecondary"
         android:textSize="14dp"
@@ -59,7 +59,7 @@
     <!--        android:layout_marginTop="2dp"-->
     <!--        android:layout_marginEnd="8dp"-->
     <!--        android:ellipsize="end"-->
-    <!--        android:fontFamily="@font/nanum_square_neo_bold"-->
+    <!--        android:fontFamily="@font/pretendard_bold"-->
     <!--        android:lineSpacingExtra="4dp"-->
     <!--        android:maxLines="2"-->
     <!--        android:minLines="2"-->

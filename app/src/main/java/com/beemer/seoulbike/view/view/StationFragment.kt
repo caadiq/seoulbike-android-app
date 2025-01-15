@@ -62,6 +62,7 @@ class StationFragment : Fragment(), FavoriteAdapter.OnFavoriteClickListener, Sta
             DefaultDialog(
                 title = null,
                 message = "즐겨찾기에서 삭제하시겠습니까?",
+                canCancel = true,
                 onConfirm = {
                     favoriteStationViewModel.deleteFavoriteStation(item.stationId)
                     lottie.progress = 0.0f

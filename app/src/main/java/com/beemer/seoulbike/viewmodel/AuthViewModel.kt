@@ -21,6 +21,9 @@ class AuthViewModel @Inject constructor(private val repository: AuthRepository) 
     private val _signIn = MutableLiveData<SignInResponseDto>()
     val signIn: LiveData<SignInResponseDto> = _signIn
 
+    private val _signOut = MutableLiveData<Unit>()
+    val signOut: LiveData<Unit> = _signOut
+
     fun reissueAllTokens(dto: TokenDto) {
         execute(
             call = { repository.reissueAllTokens(dto) },
@@ -39,6 +42,13 @@ class AuthViewModel @Inject constructor(private val repository: AuthRepository) 
         execute(
             call = { repository.signIn(dto) },
             onSuccess = { _signIn.value = it }
+        )
+    }
+
+    fun signOut() {
+        execute(
+            call = { repository.signOut() },
+            onSuccess = { _signOut.value = it }
         )
     }
 }

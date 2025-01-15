@@ -80,7 +80,6 @@ class SignInActivity : AppCompatActivity() {
                 if (!message.isNullOrEmpty()) {
                     DefaultDialog(
                         message = message,
-                        canCancel = false,
                         onConfirm = {}
                     ).show(supportFragmentManager, "DefaultDialog")
                 }

@@ -12,7 +12,7 @@ import com.beemer.seoulbike.databinding.DialogDefaultBinding
 class DefaultDialog(
     private val title: String? = null,
     private val message: String,
-    private val canCancel: Boolean = true,
+    private val canCancel: Boolean = false,
     private val cancelText: String = "취소",
     private val confirmText: String = "확인",
     private val onConfirm: () -> Unit,

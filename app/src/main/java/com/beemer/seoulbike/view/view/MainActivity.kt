@@ -135,6 +135,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 DefaultDialog(
                     title = null,
                     message = "앱을 사용하기 위해서는 위치 권한이 필요합니다. 설정으로 이동해서 권한을 허용해주세요.",
+                    canCancel = true,
                     cancelText = "종료",
                     confirmText = "설정",
                     onConfirm = {
@@ -337,7 +338,26 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         binding.txtNickname.setOnClickListener {
+            binding.drawerLayout.closeDrawer(binding.navigationView)
             // TODO: 프로필 화면으로 이동
+        }
+
+        binding.txtSettings.setOnClickListener {
+            binding.drawerLayout.closeDrawer(binding.navigationView)
+            // TODO: 설정 화면으로 이동
+        }
+
+        binding.txtSignOut.setOnClickListener {
+            binding.drawerLayout.closeDrawer(binding.navigationView)
+
+            DefaultDialog(
+                title = null,
+                message = "로그아웃 하시겠습니까?",
+                canCancel = true,
+                onConfirm = {
+                    authViewModel.signOut()
+                }
+            ).show(supportFragmentManager, "DefaultDialog")
         }
 
         binding.recyclerMenu.apply {
@@ -414,6 +434,34 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             errorCode.observe(this@MainActivity) { code ->
                 if (code != null)
                     binding.btnReload.hideProgress(R.string.str_map_reload)
+            }
+        }
+
+        authViewModel.apply {
+            signOut.observe(this@MainActivity) {
+                UserData.apply {
+                    isLoggedIn = false
+                    email = null
+                    nickname = null
+                    socialType = null
+                    createdDate = null
+                    accessToken = null
+                    refreshToken = null
+                }
+
+                dataStoreViewModel.clearTokens()
+
+                setupNavigationView()
+            }
+
+            errorCode.observe(this@MainActivity) { code ->
+                if (code == null) return@observe
+
+                DefaultDialog(
+                    title = null,
+                    message = "로그아웃 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                    onConfirm = {}
+                ).show(supportFragmentManager, "DefaultDialog")
             }
         }
     }

@@ -25,7 +25,9 @@ import androidx.lifecycle.lifecycleScope
 import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.ActivityMainBinding
 import com.beemer.seoulbike.model.data.UserData
+import com.beemer.seoulbike.model.dto.NavigationViewMenuDto
 import com.beemer.seoulbike.model.dto.TokenDto
+import com.beemer.seoulbike.view.adapter.NavigationViewMenuAdapter
 import com.beemer.seoulbike.viewmodel.AuthViewModel
 import com.beemer.seoulbike.viewmodel.DataStoreViewModel
 import com.beemer.seoulbike.viewmodel.MainFragmentType
@@ -41,6 +43,8 @@ class MainActivity : AppCompatActivity() {
     private val dataStoreViewModel by viewModels<DataStoreViewModel>()
     private val authViewModel by viewModels<AuthViewModel>()
     private val mainViewModel by viewModels<MainViewModel>()
+
+    private val navigationViewMenuAdapter = NavigationViewMenuAdapter()
 
     private var backPressedTime: Long = 0
     private val onBackPressedCallback = object : OnBackPressedCallback(true) {
@@ -84,8 +88,9 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 setupFragment()
-//                setupViewModel()
                 setupView()
+                setupNavigationView()
+                setupViewModel()
             } else {
                 DefaultDialog(
                     title = null,
@@ -183,8 +188,9 @@ class MainActivity : AppCompatActivity() {
     private fun checkPermissions() {
         if (ContextCompat.checkSelfPermission(this, locationPermissions[0]) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, locationPermissions[1]) == PackageManager.PERMISSION_GRANTED) {
             setupFragment()
-//            setupViewModel()
             setupView()
+            setupNavigationView()
+            setupViewModel()
         } else {
             ActivityCompat.requestPermissions(this, locationPermissions, PERMISSION_REQUEST_CODE)
         }
@@ -193,32 +199,34 @@ class MainActivity : AppCompatActivity() {
     private fun setupFragment() {
         supportFragmentManager.beginTransaction().apply {
             add(binding.containerView.id, MapFragment(), MainFragmentType.MAP.tag)
-            add(binding.containerView.id, StationFragment(), MainFragmentType.STATION.tag)
+            add(binding.containerView.id, StationFragment(), MainFragmentType.FAVORITE.tag)
+            add(binding.containerView.id, StationFragment(), MainFragmentType.NEARBY.tag)
             commit()
         }
 
         supportFragmentManager.executePendingTransactions()
         supportFragmentManager.beginTransaction().apply {
-            hide(supportFragmentManager.findFragmentByTag(MainFragmentType.STATION.tag)!!)
+            hide(supportFragmentManager.findFragmentByTag(MainFragmentType.FAVORITE.tag)!!)
+            hide(supportFragmentManager.findFragmentByTag(MainFragmentType.NEARBY.tag)!!)
             commit()
         }
     }
 
-//    private fun setupViewModel() {
-//        mainViewModel.currentFragmentType.observe(this) { fragmentType ->
-//            val currentFragment = supportFragmentManager.findFragmentByTag(fragmentType.tag)
-//            supportFragmentManager.beginTransaction().apply {
-//                supportFragmentManager.fragments.forEach { fragment ->
-//                    if (fragment == currentFragment)
-//                        show(fragment)
-//                    else
-//                        hide(fragment)
-//                }
-//            }.commit()
-//
-//            binding.tabLayout.getTabAt(fragmentType.ordinal)?.select()
-//        }
-//    }
+    private fun setupViewModel() {
+        mainViewModel.currentFragmentType.observe(this) { fragmentType ->
+            val currentFragment = supportFragmentManager.findFragmentByTag(fragmentType.tag)
+            supportFragmentManager.beginTransaction().apply {
+                supportFragmentManager.fragments.forEach { fragment ->
+                    if (fragment == currentFragment)
+                        show(fragment)
+                    else
+                        hide(fragment)
+                }
+            }.commit()
+
+            navigationViewMenuAdapter.setItemSelected(fragmentType.ordinal)
+        }
+    }
 
     private fun setupView() {
         binding.drawerLayout.apply {
@@ -240,6 +248,50 @@ class MainActivity : AppCompatActivity() {
 
         binding.btnMenu.setOnClickListener {
             binding.drawerLayout.openDrawer(binding.navigationView)
+        }
+    }
+
+    private fun setupNavigationView() {
+        if (UserData.isLoggedIn) {
+            binding.layoutSignIn.visibility = View.GONE
+            binding.layoutProfile.visibility = View.VISIBLE
+            binding.divider.visibility = View.VISIBLE
+            binding.txtSignOut.visibility = View.VISIBLE
+            binding.txtNickname.text = UserData.nickname
+            binding.txtEmail.text = UserData.email
+        } else {
+            binding.layoutSignIn.visibility = View.VISIBLE
+            binding.layoutProfile.visibility = View.GONE
+            binding.divider.visibility = View.GONE
+            binding.txtSignOut.visibility = View.GONE
+        }
+
+        binding.layoutSignIn.setOnClickListener {
+            // TODO: 로그인 화면으로 이동
+        }
+
+        binding.txtNickname.setOnClickListener {
+            // TODO: 프로필 화면으로 이동
+        }
+
+        binding.recyclerMenu.apply {
+            adapter = navigationViewMenuAdapter
+            itemAnimator = null
+            setHasFixedSize(true)
+        }
+
+        navigationViewMenuAdapter.apply {
+            setItemList(
+                listOf(
+                    NavigationViewMenuDto(R.drawable.icon_map, resources.getString(R.string.str_main_map), true),
+                    NavigationViewMenuDto(R.drawable.icon_favorite, resources.getString(R.string.str_main_favorite), false),
+                    NavigationViewMenuDto(R.drawable.icon_bike, resources.getString(R.string.str_main_nearby), false),
+                )
+            )
+            setOnItemClickListener { _, position ->
+                mainViewModel.setCurrentFragment(position)
+                binding.drawerLayout.closeDrawer(binding.navigationView)
+            }
         }
     }
 }

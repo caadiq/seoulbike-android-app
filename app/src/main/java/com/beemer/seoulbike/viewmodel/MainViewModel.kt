@@ -8,7 +8,8 @@ import javax.inject.Inject
 
 enum class MainFragmentType(val tag: String) {
     MAP("map"),
-    STATION("station"),
+    FAVORITE("favorite"),
+    NEARBY("nearby"),
 }
 
 @HiltViewModel
@@ -29,7 +30,8 @@ class MainViewModel @Inject constructor() : ViewModel() {
     private fun getPageType(item: Int): MainFragmentType {
         return when (item) {
             0 -> MainFragmentType.MAP
-            1 -> MainFragmentType.STATION
+            1 -> MainFragmentType.FAVORITE
+            2 -> MainFragmentType.NEARBY
             else -> MainFragmentType.MAP
         }
     }

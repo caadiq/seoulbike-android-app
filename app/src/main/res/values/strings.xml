@@ -2,8 +2,9 @@
     <string name="app_name">따릉이 현황</string>
 
     <!--activity_main.xml-->
-    <string name="str_main_tab_map">지도</string>
-    <string name="str_main_tab_station">대여소</string>
+    <string name="str_main_signin">로그인</string>
+    <string name="str_main_signout">로그아웃</string>
+    <string name="str_main_settings">설정</string>
 
     <!--activity_search.xml-->
     <string name="str_search_hint">대여소 검색</string>
@@ -39,6 +40,9 @@
 
     <!--MainActivity.kt-->
     <string name="str_main_press_back">뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.</string>
+    <string name="str_main_map">지도</string>
+    <string name="str_main_favorite">줄겨찾기</string>
+    <string name="str_main_nearby">주변 대여소</string>
 
     <!--MapFragment.kt-->
     <string name="str_map_reloading">새로고침 중…</string>

@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:openDrawer="start">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutParent"
@@ -13,9 +14,9 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/mapView"
+            android:name="com.naver.maps.map.MapFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:name="com.naver.maps.map.MapFragment"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -195,7 +196,7 @@
                     android:fontFamily="@font/pretendard_bold"
                     android:maxLines="1"
                     android:textColor="@color/primary"
-                    android:textSize="16dp"
+                    android:textSize="18dp"
                     app:drawableEndCompat="@drawable/icon_arrow_right_12dp"
                     app:layout_constrainedWidth="true"
                     app:layout_constraintBottom_toTopOf="@+id/txtEmail"
@@ -213,7 +214,7 @@
                     android:ellipsize="end"
                     android:maxLines="1"
                     android:textColor="@color/secondary"
-                    android:textSize="12dp"
+                    android:textSize="14dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

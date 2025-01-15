@@ -10,8 +10,9 @@ import androidx.fragment.app.DialogFragment
 import com.beemer.seoulbike.databinding.DialogDefaultBinding
 
 class DefaultDialog(
-    private val title: String?,
+    private val title: String? = null,
     private val message: String,
+    private val canCancel: Boolean = true,
     private val cancelText: String = "취소",
     private val confirmText: String = "확인",
     private val onConfirm: () -> Unit,
@@ -54,6 +55,7 @@ class DefaultDialog(
 
         binding.txtCancel.apply {
             text = cancelText
+            visibility = if (canCancel) View.VISIBLE else View.GONE
             setOnClickListener {
                 onCancel?.invoke()
                 dismiss()

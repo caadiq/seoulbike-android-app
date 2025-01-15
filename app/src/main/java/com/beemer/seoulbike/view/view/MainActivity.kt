@@ -115,20 +115,23 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         locationSource = FusedLocationSource(this, PERMISSION_REQUEST_CODE)
 
-        setupInsets()
         checkPermissions()
+        setupInsets()
+        setupMap()
+        setupView()
+        setupViewModel()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        setupNavigationView()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if (requestCode == PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                setupMap()
-                setupView()
-                setupNavigationView()
-                setupViewModel()
-            } else {
+            if (grantResults.isNotEmpty() && grantResults[0] != PackageManager.PERMISSION_GRANTED) {
                 DefaultDialog(
                     title = null,
                     message = "앱을 사용하기 위해서는 위치 권한이 필요합니다. 설정으로 이동해서 권한을 허용해주세요.",
@@ -194,8 +197,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         splashScreen.setKeepOnScreenCondition { true }
 
         lifecycleScope.launch {
-            val accessToken = dataStoreViewModel.accessToken.first()
-            val refreshToken = dataStoreViewModel.refreshToken.first()
+            val accessToken = dataStoreViewModel.accessTokenFlow.first()
+            val refreshToken = dataStoreViewModel.refreshTokenFlow.first()
 
             if (!accessToken.isNullOrEmpty() && !refreshToken.isNullOrEmpty()) {
                 authViewModel.reissueAllTokens(TokenDto(
@@ -208,14 +211,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         authViewModel.apply {
-            reissueAllTokens.observe(this@MainActivity) {
+            reissueAllTokens.observe(this@MainActivity) { tokens ->
                 UserData.apply {
                     isLoggedIn = true
-                    accessToken = it.accessToken
-                    refreshToken = it.refreshToken
+                    accessToken = tokens.accessToken
+                    refreshToken = tokens.refreshToken
                 }
 
                 authViewModel.getUser()
+                tokens.accessToken?.let { dataStoreViewModel.saveAccessToken(it) }
+                tokens.refreshToken?.let { dataStoreViewModel.saveRefreshToken(it) }
             }
 
             user.observe(this@MainActivity) {
@@ -230,19 +235,16 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
             errorCode.observe(this@MainActivity) { code ->
-                if (code == 401)
-                    splashScreen.setKeepOnScreenCondition { false }
+                if (code == null)
+                    return@observe
+
+                splashScreen.setKeepOnScreenCondition { false }
             }
         }
     }
 
     private fun checkPermissions() {
-        if (ContextCompat.checkSelfPermission(this, locationPermissions[0]) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, locationPermissions[1]) == PackageManager.PERMISSION_GRANTED) {
-            setupMap()
-            setupView()
-            setupNavigationView()
-            setupViewModel()
-        } else {
+        if (ContextCompat.checkSelfPermission(this, locationPermissions[0]) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, locationPermissions[1]) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, locationPermissions, PERMISSION_REQUEST_CODE)
         }
     }
@@ -330,7 +332,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         binding.layoutSignIn.setOnClickListener {
-            // TODO: 로그인 화면으로 이동
+            binding.drawerLayout.closeDrawer(binding.navigationView)
+            startActivity(Intent(this, SignInActivity::class.java))
         }
 
         binding.txtNickname.setOnClickListener {

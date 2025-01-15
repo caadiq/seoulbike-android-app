@@ -2,6 +2,8 @@ package com.beemer.seoulbike.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import com.beemer.seoulbike.model.dto.SignInRequestDto
+import com.beemer.seoulbike.model.dto.SignInResponseDto
 import com.beemer.seoulbike.model.dto.TokenDto
 import com.beemer.seoulbike.model.dto.UserInfoDto
 import com.beemer.seoulbike.model.repository.AuthRepository
@@ -16,6 +18,9 @@ class AuthViewModel @Inject constructor(private val repository: AuthRepository) 
     private val _user = MutableLiveData<UserInfoDto>()
     val user: LiveData<UserInfoDto> = _user
 
+    private val _signIn = MutableLiveData<SignInResponseDto>()
+    val signIn: LiveData<SignInResponseDto> = _signIn
+
     fun reissueAllTokens(dto: TokenDto) {
         execute(
             call = { repository.reissueAllTokens(dto) },
@@ -27,6 +32,13 @@ class AuthViewModel @Inject constructor(private val repository: AuthRepository) 
         execute(
             call = { repository.getUser() },
             onSuccess = { _user.value = it }
+        )
+    }
+
+    fun signIn(dto: SignInRequestDto) {
+        execute(
+            call = { repository.signIn(dto) },
+            onSuccess = { _signIn.value = it }
         )
     }
 }

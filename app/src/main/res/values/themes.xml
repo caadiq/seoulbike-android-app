@@ -28,4 +28,9 @@
     <style name="CustomRoundedBackgroundBottomSheet" parent="Widget.Design.BottomSheet.Modal">
         <item name="android:background">@drawable/rectangle_white_top_rounded_16dp</item>
     </style>
+
+    <style name="CustomEditText" parent="Widget.Design.TextInputLayout">
+        <item name="colorControlNormal">@color/dark_gray</item>
+        <item name="colorControlActivated">@color/primary</item>
+    </style>
 </resources>

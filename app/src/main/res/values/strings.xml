@@ -1,6 +1,13 @@
 <resources>
     <string name="app_name">따릉이 현황</string>
 
+    <!--activity_signin.xml-->
+    <string name="str_signin_email">이메일</string>
+    <string name="str_signin_password">비밀번호</string>
+    <string name="str_signin_signin">로그인</string>
+    <string name="str_signin_forgot_password">비밀번호 찾기</string>
+    <string name="str_signin_signup">회원가입</string>
+
     <!--activity_main.xml-->
     <string name="str_main_signin">로그인</string>
     <string name="str_main_signout">로그아웃</string>

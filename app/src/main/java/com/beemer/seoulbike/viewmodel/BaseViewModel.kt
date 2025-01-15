@@ -1,5 +1,7 @@
 package com.beemer.seoulbike.viewmodel
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,6 +31,13 @@ open class BaseViewModel : ViewModel() {
             } finally {
                 onFinally()
             }
+        }
+    }
+
+    fun <A, B> combine(liveData1: LiveData<A>, liveData2: LiveData<B>): LiveData<Pair<A?, B?>> {
+        return MediatorLiveData<Pair<A?, B?>>().apply {
+            addSource(liveData1) { value = it to liveData2.value }
+            addSource(liveData2) { value = liveData1.value to it }
         }
     }
 }

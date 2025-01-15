@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:openDrawer="start">
+    android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutParent"
@@ -13,9 +12,10 @@
         android:layout_height="match_parent">
 
         <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/containerView"
+            android:id="@+id/mapView"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:name="com.naver.maps.map.MapFragment"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -68,6 +68,39 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/btnMenu"
                 app:layout_constraintTop_toTopOf="@+id/btnMenu" />
+
+            <com.naver.maps.map.widget.LocationButtonView
+                android:id="@+id/locationButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <com.naver.maps.map.widget.ScaleBarView
+                android:id="@+id/scaleBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                app:layout_constraintBottom_toBottomOf="@+id/locationButton"
+                app:layout_constraintStart_toEndOf="@+id/locationButton" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnReload"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/rectangle_secondary_rounded_24dp_ripple"
+                android:elevation="2dp"
+                android:fontFamily="@font/pretendard_bold"
+                android:paddingHorizontal="24dp"
+                android:stateListAnimator="@null"
+                android:text="@string/str_map_reload"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

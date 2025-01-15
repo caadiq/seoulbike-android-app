@@ -2,10 +2,8 @@ package com.beemer.seoulbike.view.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.beemer.seoulbike.R
 import com.beemer.seoulbike.databinding.RowNavigationviewMenuBinding
 import com.beemer.seoulbike.model.dto.NavigationViewMenuDto
 import com.beemer.seoulbike.view.diff.NavigationViewMenuDiffUtil
@@ -37,32 +35,8 @@ class NavigationViewMenuAdapter : RecyclerView.Adapter<NavigationViewMenuAdapter
         }
 
         fun bind(item: NavigationViewMenuDto) {
-            binding.layout.background = if (item.isSelected) {
-                AppCompatResources.getDrawable(
-                    binding.root.context,
-                    R.drawable.rectangle_primary_alpha20_right_rounded_28dp
-                )
-            } else {
-                null
-            }
-
-            binding.imgIcon.apply {
-                setImageResource(item.icon)
-                imageTintList = if (item.isSelected) {
-                    AppCompatResources.getColorStateList(binding.root.context, R.color.primary)
-                } else {
-                    AppCompatResources.getColorStateList(binding.root.context, R.color.dark_gray)
-                }
-            }
-
-            binding.txtTitle.apply {
-                text = item.title
-                setTextColor(if (item.isSelected) {
-                    AppCompatResources.getColorStateList(binding.root.context, R.color.primary)
-                } else {
-                    AppCompatResources.getColorStateList(binding.root.context, R.color.dark_gray)
-                })
-            }
+            binding.imgIcon.setImageResource(item.icon)
+            binding.txtTitle.text = item.title
         }
     }
 
@@ -77,15 +51,5 @@ class NavigationViewMenuAdapter : RecyclerView.Adapter<NavigationViewMenuAdapter
         itemList.clear()
         itemList.addAll(list)
         diffResult.dispatchUpdatesTo(this)
-    }
-
-    fun setItemSelected(position: Int) {
-        val previousSelectedPosition = itemList.indexOfFirst { it.isSelected }
-        if (previousSelectedPosition != -1) {
-            itemList[previousSelectedPosition].isSelected = false
-            notifyItemChanged(previousSelectedPosition)
-        }
-        itemList[position].isSelected = true
-        notifyItemChanged(position)
     }
 }

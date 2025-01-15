@@ -119,12 +119,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         setupInsets()
         setupMap()
         setupView()
+        setupNavigationView()
         setupViewModel()
     }
 
     override fun onResume() {
         super.onResume()
-        setupNavigationView()
+        setupNavigationViewLoginState()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -318,20 +319,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setupNavigationView() {
-        if (UserData.isLoggedIn) {
-            binding.layoutSignIn.visibility = View.GONE
-            binding.layoutProfile.visibility = View.VISIBLE
-            binding.divider.visibility = View.VISIBLE
-            binding.txtSignOut.visibility = View.VISIBLE
-            binding.txtNickname.text = UserData.nickname
-            binding.txtEmail.text = UserData.email
-        } else {
-            binding.layoutSignIn.visibility = View.VISIBLE
-            binding.layoutProfile.visibility = View.GONE
-            binding.divider.visibility = View.GONE
-            binding.txtSignOut.visibility = View.GONE
-        }
-
         binding.layoutSignIn.setOnClickListener {
             binding.drawerLayout.closeDrawer(binding.navigationView)
             startActivity(Intent(this, SignInActivity::class.java))
@@ -451,7 +438,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
                 dataStoreViewModel.clearTokens()
 
-                setupNavigationView()
+                setupNavigationViewLoginState()
             }
 
             errorCode.observe(this@MainActivity) { code ->
@@ -463,6 +450,22 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     onConfirm = {}
                 ).show(supportFragmentManager, "DefaultDialog")
             }
+        }
+    }
+
+    private fun setupNavigationViewLoginState() {
+        if (UserData.isLoggedIn) {
+            binding.layoutSignIn.visibility = View.GONE
+            binding.layoutProfile.visibility = View.VISIBLE
+            binding.divider.visibility = View.VISIBLE
+            binding.txtSignOut.visibility = View.VISIBLE
+            binding.txtNickname.text = UserData.nickname
+            binding.txtEmail.text = UserData.email
+        } else {
+            binding.layoutSignIn.visibility = View.VISIBLE
+            binding.layoutProfile.visibility = View.GONE
+            binding.divider.visibility = View.GONE
+            binding.txtSignOut.visibility = View.GONE
         }
     }
 

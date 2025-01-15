@@ -41,7 +41,7 @@
     <!--MainActivity.kt-->
     <string name="str_main_press_back">뒤로 가기 버튼을 한 번 더 누르면 종료됩니다.</string>
     <string name="str_main_map">지도</string>
-    <string name="str_main_favorite">줄겨찾기</string>
+    <string name="str_main_favorite">즐겨찾기</string>
     <string name="str_main_nearby">주변 대여소</string>
 
     <!--MapFragment.kt-->

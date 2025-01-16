@@ -110,7 +110,7 @@ class StationDetailsDialog(
 
             Marker().apply {
                 position = LatLng(lat, lon)
-                icon = OverlayImage.fromResource(R.drawable.icon_marker_custom)
+                icon = OverlayImage.fromResource(R.drawable.icon_marker)
                 width = 160
                 height = 160
                 map = naverMap

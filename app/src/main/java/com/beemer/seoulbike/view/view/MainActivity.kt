@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var locationSource: FusedLocationSource
     private val markerList = mutableListOf<Marker>()
 
-    private var isFirstLoad = false
+    private var isFirstLoad = true
     private var myLocation: Pair<Double?, Double?> = Pair(null, null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -180,7 +180,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // 현위치 설정
         naverMap.locationSource = locationSource
         naverMap.locationTrackingMode = LocationTrackingMode.Follow
-        getLocation(naverMap)
 
         // 카메라 설정
         naverMap.minZoom = 10.0
@@ -232,6 +231,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     socialType = it.socialType
                     createdDate = it.createdDate
                 }
+
+                setupNavigationViewLoginState()
 
                 splashScreen.setKeepOnScreenCondition { false }
             }
@@ -373,6 +374,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun setupViewModel() {
         bikeViewModel.apply {
             nearbyStations.observe(this@MainActivity) { stations ->
+                if (isFirstLoad) {
+                    getLocation(naverMap)
+                    isFirstLoad = false
+                }
+
                 binding.btnReload.hideProgress(R.string.str_map_reload)
 
                 markerList.forEach { it.map = null }
@@ -499,11 +505,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun getNearbyStations(naverMap: NaverMap) {
-        if (!isFirstLoad) {
-            isFirstLoad = true
-            return
-        }
-
         val cameraPosition = naverMap.cameraPosition
         val lat = cameraPosition.target.latitude
         val lon = cameraPosition.target.longitude

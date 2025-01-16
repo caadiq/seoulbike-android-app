@@ -10,6 +10,7 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
+import android.util.Log
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
@@ -201,6 +202,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             val accessToken = dataStoreViewModel.accessTokenFlow.first()
             val refreshToken = dataStoreViewModel.refreshTokenFlow.first()
 
+            Log.d("테스트", "[splashScreen] accesstoken: $accessToken, refreshtoken: $refreshToken")
+
             if (!accessToken.isNullOrEmpty() && !refreshToken.isNullOrEmpty()) {
                 authViewModel.reissueAllTokens(TokenDto(
                     accessToken = accessToken,
@@ -212,36 +215,49 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         authViewModel.apply {
-            reissueAllTokens.observe(this@MainActivity) { tokens ->
-                UserData.apply {
-                    isLoggedIn = true
-                    accessToken = tokens.accessToken
-                    refreshToken = tokens.refreshToken
+            reissueAllTokens.apply {
+                response.observe(this@MainActivity) { tokens ->
+                    UserData.apply {
+                        isLoggedIn = true
+                        accessToken = tokens.accessToken
+                        refreshToken = tokens.refreshToken
+                    }
+
+                    Log.d("테스트", "[reissueAllTokens]: accesstoken: ${tokens.accessToken}, refreshtoken: ${tokens.refreshToken}")
+
+                    authViewModel.getUser()
+                    tokens.accessToken?.let { dataStoreViewModel.saveAccessToken(it) }
+                    tokens.refreshToken?.let { dataStoreViewModel.saveRefreshToken(it) }
                 }
 
-                authViewModel.getUser()
-                tokens.accessToken?.let { dataStoreViewModel.saveAccessToken(it) }
-                tokens.refreshToken?.let { dataStoreViewModel.saveRefreshToken(it) }
+                errorCode.observe(this@MainActivity) { code ->
+                    if (code != null)
+                        splashScreen.setKeepOnScreenCondition { false }
+
+                    Log.d("테스트", "[reissueAllTokens] errorcode: $code")
+                }
             }
 
-            user.observe(this@MainActivity) {
-                UserData.apply {
-                    email = it.email
-                    nickname = it.nickname
-                    socialType = it.socialType
-                    createdDate = it.createdDate
+            user.apply {
+                response.observe(this@MainActivity) {
+                    UserData.apply {
+                        email = it.email
+                        nickname = it.nickname
+                        socialType = it.socialType
+                        createdDate = it.createdDate
+                    }
+
+                    setupNavigationViewLoginState()
+
+                    splashScreen.setKeepOnScreenCondition { false }
+
+                    Log.d("테스트", "[user]: email: ${it.email}, nickname: ${it.nickname}, socialType: ${it.socialType}, createdDate: ${it.createdDate}")
                 }
 
-                setupNavigationViewLoginState()
-
-                splashScreen.setKeepOnScreenCondition { false }
-            }
-
-            errorCode.observe(this@MainActivity) { code ->
-                if (code == null)
-                    return@observe
-
-                splashScreen.setKeepOnScreenCondition { false }
+                errorCode.observe(this@MainActivity) { code ->
+                    if (code != null)
+                        splashScreen.setKeepOnScreenCondition { false }
+                }
             }
         }
     }
@@ -373,88 +389,108 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun setupViewModel() {
         bikeViewModel.apply {
-            nearbyStations.observe(this@MainActivity) { stations ->
-                if (isFirstLoad) {
-                    getLocation(naverMap)
-                    isFirstLoad = false
-                }
+            nearbyStations.apply {
+                response.observe(this@MainActivity) { stations ->
+                    if (isFirstLoad) {
+                        getLocation(naverMap)
+                        isFirstLoad = false
+                    }
 
-                binding.btnReload.hideProgress(R.string.str_map_reload)
+                    binding.btnReload.hideProgress(R.string.str_map_reload)
 
-                markerList.forEach { it.map = null }
-                markerList.clear()
+                    markerList.forEach { it.map = null }
+                    markerList.clear()
 
-                stations.forEach { station ->
-                    val lat = station.stationDetails.lat
-                    val lon = station.stationDetails.lon
+                    stations.forEach { station ->
+                        val lat = station.stationDetails.lat
+                        val lon = station.stationDetails.lon
 
-                    val qrBikeCnt = station.stationStatus.qrBikeCnt
-                    val elecBikeCnt = station.stationStatus.elecBikeCnt
+                        val qrBikeCnt = station.stationStatus.qrBikeCnt
+                        val elecBikeCnt = station.stationStatus.elecBikeCnt
 
-                    if (lat != null && lon != null && qrBikeCnt != null && elecBikeCnt != null) {
-                        val totalBikeCnt = qrBikeCnt + elecBikeCnt
+                        if (lat != null && lon != null && qrBikeCnt != null && elecBikeCnt != null) {
+                            val totalBikeCnt = qrBikeCnt + elecBikeCnt
 
-                        val markerBinding = MarkerCustomBinding.inflate(LayoutInflater.from(this@MainActivity))
-                        markerBinding.txtCount.text = "${totalBikeCnt}대"
+                            val markerBinding = MarkerCustomBinding.inflate(LayoutInflater.from(this@MainActivity))
+                            markerBinding.txtCount.text = "${totalBikeCnt}대"
 
-                        markerBinding.layoutParent.background = when (totalBikeCnt) {
-                            0 -> ResourcesCompat.getDrawable(resources, R.drawable.chat_bubble_red, null)
-                            in 1..2 -> ResourcesCompat.getDrawable(resources, R.drawable.chat_bubble_yellow, null)
-                            else -> ResourcesCompat.getDrawable(resources, R.drawable.chat_bubble_primary, null)
-                        }
+                            markerBinding.layoutParent.background = when (totalBikeCnt) {
+                                0 -> ResourcesCompat.getDrawable(
+                                    resources,
+                                    R.drawable.chat_bubble_red,
+                                    null
+                                )
 
-                        val marker = Marker().apply {
-                            position = LatLng(lat, lon)
-                            icon = OverlayImage.fromView(markerBinding.root)
-                            anchor = PointF(0.2f, 1.0f)
-                            onClickListener = Overlay.OnClickListener {
-                                val cameraUpdate = CameraUpdate.scrollTo(LatLng(lat, lon)).animate(
-                                    CameraAnimation.Easing)
-                                naverMap.moveCamera(cameraUpdate)
+                                in 1..2 -> ResourcesCompat.getDrawable(
+                                    resources,
+                                    R.drawable.chat_bubble_yellow,
+                                    null
+                                )
 
-                                StationStatusBottomsheetDialog(
-                                    item = station
-                                ).show(supportFragmentManager, "StatusBottomsheetDialog")
-                                true
+                                else -> ResourcesCompat.getDrawable(
+                                    resources,
+                                    R.drawable.chat_bubble_primary,
+                                    null
+                                )
                             }
-                            map = naverMap
+
+                            val marker = Marker().apply {
+                                position = LatLng(lat, lon)
+                                icon = OverlayImage.fromView(markerBinding.root)
+                                anchor = PointF(0.2f, 1.0f)
+                                onClickListener = Overlay.OnClickListener {
+                                    val cameraUpdate =
+                                        CameraUpdate.scrollTo(LatLng(lat, lon)).animate(
+                                            CameraAnimation.Easing
+                                        )
+                                    naverMap.moveCamera(cameraUpdate)
+
+                                    StationStatusBottomsheetDialog(
+                                        item = station
+                                    ).show(supportFragmentManager, "StatusBottomsheetDialog")
+                                    true
+                                }
+                                map = naverMap
+                            }
+                            markerList.add(marker)
                         }
-                        markerList.add(marker)
                     }
                 }
-            }
 
-            errorCode.observe(this@MainActivity) { code ->
-                if (code != null)
-                    binding.btnReload.hideProgress(R.string.str_map_reload)
-            }
-        }
-
-        authViewModel.apply {
-            signOut.observe(this@MainActivity) {
-                UserData.apply {
-                    isLoggedIn = false
-                    email = null
-                    nickname = null
-                    socialType = null
-                    createdDate = null
-                    accessToken = null
-                    refreshToken = null
+                errorCode.observe(this@MainActivity) { code ->
+                    if (code != null)
+                        binding.btnReload.hideProgress(R.string.str_map_reload)
                 }
-
-                dataStoreViewModel.clearTokens()
-
-                setupNavigationViewLoginState()
             }
 
-            errorCode.observe(this@MainActivity) { code ->
-                if (code == null) return@observe
+            authViewModel.apply {
+                signOut.apply {
+                    response.observe(this@MainActivity) {
+                        UserData.apply {
+                            isLoggedIn = false
+                            email = null
+                            nickname = null
+                            socialType = null
+                            createdDate = null
+                            accessToken = null
+                            refreshToken = null
+                        }
 
-                DefaultDialog(
-                    title = null,
-                    message = "로그아웃 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
-                    onConfirm = {}
-                ).show(supportFragmentManager, "DefaultDialog")
+                        dataStoreViewModel.clearTokens()
+
+                        setupNavigationViewLoginState()
+                    }
+
+                    errorCode.observe(this@MainActivity) { code ->
+                        if (code != null) {
+                            DefaultDialog(
+                                title = null,
+                                message = "로그아웃 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.",
+                                onConfirm = {}
+                            ).show(supportFragmentManager, "DefaultDialog")
+                        }
+                    }
+                }
             }
         }
     }

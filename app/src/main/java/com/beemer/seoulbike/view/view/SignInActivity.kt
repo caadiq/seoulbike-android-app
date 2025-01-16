@@ -59,29 +59,31 @@ class SignInActivity : AppCompatActivity() {
 
     private fun setupViewModel() {
         authViewModel.apply {
-            signIn.observe(this@SignInActivity) { user ->
-                UserData.apply {
-                    isLoggedIn = true
-                    email = user.userInfo.email
-                    nickname = user.userInfo.nickname
-                    socialType = user.userInfo.socialType
-                    createdDate = user.userInfo.createdDate
-                    accessToken = user.token.accessToken
-                    refreshToken = user.token.refreshToken
+            signIn.apply {
+                response.observe(this@SignInActivity) { user ->
+                    UserData.apply {
+                        isLoggedIn = true
+                        email = user.userInfo.email
+                        nickname = user.userInfo.nickname
+                        socialType = user.userInfo.socialType
+                        createdDate = user.userInfo.createdDate
+                        accessToken = user.token.accessToken
+                        refreshToken = user.token.refreshToken
+                    }
+
+                    user.token.accessToken?.let { dataStoreViewModel.saveAccessToken(it) }
+                    user.token.refreshToken?.let { dataStoreViewModel.saveRefreshToken(it) }
+
+                    finish()
                 }
 
-                user.token.accessToken?.let { dataStoreViewModel.saveAccessToken(it) }
-                user.token.refreshToken?.let { dataStoreViewModel.saveRefreshToken(it) }
-
-                finish()
-            }
-
-            errorMessage.observe(this@SignInActivity) { message ->
-                if (!message.isNullOrEmpty()) {
-                    DefaultDialog(
-                        message = message,
-                        onConfirm = {}
-                    ).show(supportFragmentManager, "DefaultDialog")
+                errorMessage.observe(this@SignInActivity) { message ->
+                    if (!message.isNullOrEmpty()) {
+                        DefaultDialog(
+                            message = message,
+                            onConfirm = {}
+                        ).show(supportFragmentManager, "DefaultDialog")
+                    }
                 }
             }
         }

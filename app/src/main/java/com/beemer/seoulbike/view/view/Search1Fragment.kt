@@ -111,7 +111,7 @@ class Search1Fragment : Fragment(), SearchHistoryAdapter.OnDeleteClickListener {
         }
 
         bikeViewModel.apply {
-            stationDetails.observe(viewLifecycleOwner) { station ->
+            stationDetails.response.observe(viewLifecycleOwner) { station ->
                 StationDetailsDialog(
                     item = station
                 ).show(childFragmentManager, "DetailsDialog")

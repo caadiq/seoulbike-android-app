@@ -8,24 +8,30 @@ import androidx.lifecycle.viewModelScope
 import com.beemer.seoulbike.model.utils.RetrofitUtil
 import kotlinx.coroutines.launch
 
+data class Request<T>(
+    val response: MutableLiveData<T> = MutableLiveData(),
+    val errorCode: MutableLiveData<Int?> = MutableLiveData(),
+    val errorMessage: MutableLiveData<String?> = MutableLiveData()
+)
+
 open class BaseViewModel : ViewModel() {
-    private val _errorCode = MutableLiveData<Int?>(null)
-    val errorCode: MutableLiveData<Int?> = _errorCode
-
-    private val _errorMessage = MutableLiveData<String?>(null)
-    val errorMessage: MutableLiveData<String?> = _errorMessage
-
-    protected fun <T> execute(call: suspend () -> RetrofitUtil.Results<T>, onSuccess: (T) -> Unit, onFinally: () -> Unit = {}) {
+    protected fun <T> execute(
+        call: suspend () -> RetrofitUtil.Results<T>,
+        onSuccess: (T) -> Unit,
+        errorCode: MutableLiveData<Int?>? = null,
+        errorMessage: MutableLiveData<String?>? = null,
+        onFinally: () -> Unit = {}
+    ) {
         viewModelScope.launch {
             try {
                 when (val result = call()) {
                     is RetrofitUtil.Results.Success -> {
                         onSuccess(result.data)
-                        _errorCode.postValue(null)
+                        errorCode?.postValue(null)
                     }
                     is RetrofitUtil.Results.Error -> {
-                        _errorCode.postValue(result.statusCode)
-                        _errorMessage.postValue(result.message)
+                        errorCode?.postValue(result.statusCode)
+                        errorMessage?.postValue(result.message)
                     }
                 }
             } finally {

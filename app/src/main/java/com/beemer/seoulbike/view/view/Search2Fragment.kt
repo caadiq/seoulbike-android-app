@@ -127,7 +127,7 @@ class Search2Fragment : Fragment(), StationSearchAdapter.OnFavoriteClickListener
 
     private fun setupViewModel() {
         bikeViewModel.apply {
-            stations.observe(viewLifecycleOwner) { stations ->
+            stations.response.observe(viewLifecycleOwner) { stations ->
                 binding.swipeRefreshLayout.isRefreshing = false
                 setLoading(false)
 

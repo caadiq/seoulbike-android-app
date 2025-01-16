@@ -10,14 +10,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BikeViewModel @Inject constructor(private val repository: BikeRepository) : BaseViewModel() {
-    private val _nearbyStations = MutableLiveData<List<StationDto>>()
-    val nearbyStations: LiveData<List<StationDto>> = _nearbyStations
-
-    private val _stationDetails = MutableLiveData<StationDto>()
-    val stationDetails: LiveData<StationDto> = _stationDetails
-
-    private val _stations = MutableLiveData<List<StationDto>>()
-    val stations: LiveData<List<StationDto>> = _stations
+    val nearbyStations = Request<List<StationDto>>()
+    val stationDetails = Request<StationDto>()
+    val stations = Request<List<StationDto>>()
 
     private val _page = MutableLiveData<PageDto>()
     val page: LiveData<PageDto> = _page
@@ -31,15 +26,17 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
     fun getNearbyStations(myLat: Double, myLon: Double, mapLat: Double, mapLon: Double, distance: Double, accessToken: String?) {
         execute(
             call = { repository.getNearByStations(myLat, myLon, mapLat, mapLon, distance, accessToken) },
-            onSuccess = { data -> _nearbyStations.postValue(data) },
-            onFinally = { setLoading(false) }
+            onSuccess = { data -> nearbyStations.response.postValue(data) },
+            onFinally = { setLoading(false) },
+            errorCode = nearbyStations.errorCode,
+            errorMessage = nearbyStations.errorMessage
         )
     }
 
     fun getStationDetails(myLat: Double, myLon: Double, stationId: String, accessToken: String?) {
         execute(
             call = { repository.getStationDetails(myLat, myLon, stationId, accessToken) },
-            onSuccess = { data -> _stationDetails.postValue(data) }
+            onSuccess = { data -> stationDetails.response.postValue(data) }
         )
     }
 
@@ -50,11 +47,11 @@ class BikeViewModel @Inject constructor(private val repository: BikeRepository) 
         execute(
             call = { repository.getStations(myLat, myLon, page, limit, query, accessToken) },
             onSuccess = { data ->
-                _stations.postValue(
+                stations.response.postValue(
                     if (refresh) {
                         data.stations
                     } else {
-                        _stations.value?.plus(data.stations) ?: emptyList()
+                        stations.response.value?.plus(data.stations) ?: emptyList()
                     }
                 )
                 _page.postValue(data.page)
